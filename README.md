@@ -60,6 +60,7 @@ When the reconciliation process button is pressed, the approver is shown the con
   * the institutions in which they have current memberships along with the end dates and WC numbers for those memberships
   * the institutions in which they have pending memberships along with the start dates, end dates and approved WC numbers
   * the contents of the text box message from the approver who initiated the reconciliation process
+
 When the "submit" button is pushed, the email with the specified contents is sent to the MOU Group and, if applicable, Institutional admins for all existing and pending memberships for the transferee, as well as to the Spokesperson.
 ### _**What happens if validation succeeds?**_ 
 The transfer into the group of the approver is finalized, and email is sent to the transferee, the MOU and, if applicable, institutional admins of any groups to which the transferee has current or pending memberships, and to the LSC spokesperson with the following information:
