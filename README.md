@@ -1,12 +1,18 @@
 # LIGO MOU Transfer COmanage Registry Plugin
 
 Transfers are complicated by a number of factors: 
-- There are four main types of groups: Simple MOU groups, Basic Federated MOU groups, LIGO Lab Federated groups
+- There are three main types of groups: Simple MOU groups, Basic Federated MOU groups, LIGO Lab Federated groups
 - Each federated group will have multiple institutions, so a person may transfer within a federated group
 - The LIGO Lab federated group has three statuses for a person: Lab MOU, Lab Personnel, Both
 - There are two types of transfers processes: those resulting in a person belonging to a single group and those resulting in a joint appointment
 - Transfers require coordination between the group being left and the group being joined
 - Transfers change effort (WC) numbers but must not violate effort number policy
+
+To understand how these different factors affect the transfer process, we consider the following questions:
+
+_*1. Who can initiate a transfer?*_
+In all cases, the transferee initiates the transfer.
+_*2. What information is supplied to initiate the transfer?*_
 
 The Basic transfer scenarios are laid out in the following table
 |*Scenario #*|*Original Group*|*New Group*|
