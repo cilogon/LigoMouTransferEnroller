@@ -10,58 +10,51 @@ Transfers are complicated by a number of factors:
 
 To understand how these different factors affect the transfer process, we consider the following questions:
 
-_*1. Who can initiate a transfer?*_
+1. _**Who can initiate a transfer?**_
 In all cases, the transferee initiates the transfer.
-_*2. What information is supplied to initiate the transfer?*_
-
-The Basic transfer scenarios are laid out in the following table
-|*Scenario #*|*Original Group*|*New Group*|
-|-|-|-|
-|1|Simple|Simple|
-|2|Simple|Basic Federated|
-|3|Simple|Lab Federeated|
-|4|Basic Federated|Simple|
-|5|Basic Federated|Basic Federated|
-|6|Basic Federated|Lab Federated|
-|7|Lab Federated|Simple|
-|8|Lab Federated|Basic Federated|
-|9|Lab Federated|Lab Federated| 
-
-In all scenarios, transferee initiates transfer on or before the date on which it will take place and specifies:
-* To where they are moving
-* When the first day in the new position commences
-* Whether they will retain membership in their current group 
-
-In all scenarios, a COU admin from the new group must set the position, effort (WC) numbers, and end date for the new appointment before approving.
-
-In all scenarios, a COU admin from the original group must approve if the move results in a joint appointment.
-
-In all scenarios, if the move results in a joint appointment between two or more MOU groups, all COU admins are notified of the transfer and must approve the transfer before it ic complete. 
-
-In all scenarios, if the move results in a joint appointment, the transfer cannot be completed if the sum of the effort (WC) numbers exceeds the maximum allowed values.
-
-
-*Scenario 1*: Transfer from simple MOU to simple MOU resulting in membership in a single group
-Example: Graduate student graduates from UWM and gets post-doc at PSU. Aug. 30 is their last day at UWM and Sept. 1 is their first day at PSU.
-Graduate student fills out request to transfer form indicating a move to PSU on Sept. 1. UWM COU Admins receive notification email.PSU admins recieve email that has a link to a form where they can adjust the start date, the position and the WC numbers for the appointment and approve the appointment. If the new COU (PSU) admin approves the transfer petition, the graduate student is notified of the approval along with the approved values for start date, end date, position and effort values, and the old COU (UWM) admins are notified of the approval along with the start date for the new position. If the petition is denied, both the graduate student and the old COU (UWM) admins are notified. 
-
-Case 2 : Joint appointment in two simple MOUs
-Transferee wishes to maintain membership in current COU AND petition to join another COU. Same form as Case 1, except that this time the transferee checks the box to retain their existing membership in the old COU (UWM). For this case, if an admin of the new COU (PSU) approves the petition, the algorithm looks for any date in the joint appointment period when the enrollee is above the maximum allowed effort levels. If such a date exists, the plugin informs the PI of the new COU (PSU) that the effort levels they set cause the enrolee to exceed the maximum work effort, the approval step fails, and the PI of the new COU (PSU) is returned to the efforts setting screen to reset the effort values. Additionally, the plugin informs the new COU (PSU) PI of what the maximum available effort for the transferee in the new group are as of the first day of the joint appointement, and lists all groups the transferee belongs to along with their PIs. If new effort values are set in the form that do not cause the maximum effort of the transferee to be exceeded then the petition approval may proceed as above.
-
-Case 3 : Transfer from federated MOU to simple MOU
-Transferee is moving from a simple MOU to a federated group with no joint appointments. This case should be essentially identical to Case 1 (full transfer) or Case 2 (joint appointment) above.
-
-Case 4 : Transfer from a simple MOU to a federated MOU
-Example: Graduate student graduates from UWM and gets post-doc at Adelaide in OzGrav. Aug. 30 is their last day at UWM and Sept. 1 is their first day in OzGrav. 
-Transfer is initiated by the graduate student on a date before Aug. 30. Additional to the information they provide in Case 1, they must also provide the OzGrav institution to which they are transferring. The rest of the transfer continues as in Case 1. While not a requirement at this time, if the plugin could allow us to configure an bespoke subset of COU admins for each institution within a federated COU (typically the COU PI and the COU admin(s) from the institution to which the transfer is happening) so that only that subset could approve or deny a transfer petition to the federated institution, that would probably be welcome.
-
-Case 5 : Joint apointment from a simple MOU into a federated MOU
-As in case 4, but with the added effort checking required for a joint appointment as in Case 2.
-
-Case 6: Transfer from a federated MOU to another federated MOU
-Transferee is moving from a federated group to another federated group, with no joint appointments. This case should be essentially identical to Case 4.
-
-Case 7 : Transfer from simple MOU group to LIGO Lab
-Example is from UWM to LIGO Lab MIT. Transfer is initiated by transferee. They will need to specify where they are moving to (new COU, LIGO Lab in this case, and the new instituion, MIT in this case), their first day in their new position, and when the new position will end. There is also a comment box in which they can specify any extra information. There is a checkbox if they wish to keep membership in their old COU as well as being added to the new COU, which they will not check in this case since it is a transfer. Although it is hidden, they are enrolling in both the LIGO Lab MOU COU and the LIGO Lab COU. When the form is submitted, a simple notification is sent to the admins group of their current COU (i.e UWM admins), and a notification of a new petition to join is sent to the admins group of the COU they are joining (LIGO Lab). An admin of the new COU goes to an approval form where they can set efforts, position, and remove the person from the LIGO Lab MOU (but still remain membership in LIGO Lab) and can edit the start and end date for the new COU membership. The default values for efforts are the maximum that the new member can have. The default for the end date is one year from the start date. If the new COU (Lab-MIT) admin approves the transfer petition, the transferee is notified of the approval along with the approved values for start date, end date, position and effort values, and the old COU (UWM) admins are notified of the approval along with the start date for the new position. If the petition is denied, both the graduate student and the old COU (UWM) admins are notified. 
-
-Case 8 : 
+2. _**What information is supplied to initiate the transfer?**_ The information is split into three categories:
+  * _Memberships that are ending_ - The transferee is given a list of groups to which they currently belong. The indicate (with, say, checkboxes) which, if any, groups they will be leaving. For each group they indicate they are leaving, they must specify an end date. 
+  * _Memberships that are starting_ - The transferee is asked if they will be joining one or more new groups. If they answer affirmatively, they must specify:
+    * Which group they are joining (preferably from a list of groups that includes all MOU groups except those of which they are already member or into which they are already transferring). 
+    * If they select a federated group, they are given a list of institutions within that federation that they can join. 
+    * If they are joining the LIGO Lab federated group, they are asked whether they want to be an LSC member. They default to Lab Personnel group and, if they indicate LSC member, to Lab LSC member. The case of Lab LSC member but not Lab personnel is unusual and will be handled by hand.
+    * When membership in the new group should begin. 
+    * If they are joining another group. If they indicate they are, then indicate the same information for the next group they are joining.
+  * _Other information_ A text box is provided so that the transferee can provide any other information they feel is relevant.
+3. _**Who is notified of a pending transfer?**_ 
+  * If the transferee is leaving a group, the admins of the group they are leaving are notified of:
+    * the name of the person who is leaving their group and the end date the transferee specified
+  * If the transferee is joining a group simple MOU group, the admins of the MOU group they are joining are notified of:
+    * the name of the person who is petitioning to join their group, the start date they specified, and the link to the petition approval page.
+  * If the transferee is petitioning to join a federated MOU group, the institutional admins get the same notification as the MOU group admins
+  * If the trasnferee is petitioning to join the LIGO Lab group, all admins are also informed whether the transferee indicated they wish to be an LSC member
+  * In every case, the "other information" specified by the transferee in the text box is included
+  * The transferee is also sent an email summarizing all the values (institutions being left and/or joined, dates, etc) they specified in the petition.
+4. _**What information is shown on the transfer approval form?**_ 
+  * The name of the transferee
+  * The list of current and pending group memberships for the transferee
+  * For each current group membership, the position, work contribution (WC) values, and end date
+  * For each pending group membership, the start date 
+  * The contents of the "other information" text box from the petition
+  * A button to send an emai to initiate a "reconciliation" process (see below)
+6. _**What is editable during approval?**_ Petitions to join a group (but not to leave a group) must be approved by MOU group or institutional admins for the group being joined. During approval, the admins MAY alter:
+  * the start date of the petition
+  * if it is a petition to join LIGO Lab, the approver may alter whether the transferee joins as an LSC member
+The admins MUST further specify:
+  * the position (affiliation) of the person within their group
+  * the WC values for the person withing their group
+  * the end date for person within their group _(we should not continue to allow "never" as an end date, see below)_
+7. _**What validation is done before approval is finalized?**_ Total WC numbers for each date until the specified end date of the new membership are checked to ensure they do not exceed the maximum. These totals include the values for each current membership and each pending membership. If a pending membership has not been finalized, the WC numbers are set to 0 for that membership. 
+8. _**What happens if validation fails?**_ The approver is shown the following information:
+  * the approver is shown the date range for which the requested WC numbers exceeded the maximum and the largest amount by which the maximum WC was exceeded.
+9. _**What happens if the approver initiates a reconciliation process?**_ When the reconciliation process button is pressed, the approver is shown the contents of an email that will be sent (see below) along with a text box in which they may write a message to the other recipients of the email with, for instance, a request to change end dates or WC values of existing memberships for the transferee. The contents of the email include:
+  * the name of the transferee
+  * the institutions in which they have current memberships along with the end dates and WC numbers for those memberships
+  * the institutions in which they have pending memberships along with the start dates, end dates and approved WC numbers
+  * the contents of the text box message from the approver who initiated the reconciliation process
+When the "submit" button is pushed, the email with the specified contents is sent to the MOU Group and, if applicable, Institutional admins for all existing and pending memberships for the transferee, as well as to the Spokesperson.
+10. _**What happens if validation succeeds?**_ The transfer into the group of the approver is finalized, and email is sent to the transferee, the MOU and, if applicable, institutional admins of any groups to which the transferee has current or pending memberships, and to the LSC spokesperson with the following information:
+  * the name of the transferee
+  * the list of current groups to which the transferee belongs with their end dates
+  * the list of pending groups to which the transferee has been approved with their start and end dates
+ 
