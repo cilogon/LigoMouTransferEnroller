@@ -12,7 +12,8 @@ To understand how these different factors affect the transfer process, we consid
 
 ### _**Who can initiate a transfer?**_
 In all cases except for transfers into the LIGO Lab, the transferee initiates the transfer. In the case of transfers into the LIGO Lab, the transfer is initiated by an approved LIGO Laboratory member (Melody to check this is the preferred protocol).
-### _**What information is supplied to initiate the transfer?**_ The information is split into three categories:
+### _**What information is supplied to initiate the transfer?**_ 
+The information is split into three categories:
   * _Memberships that are ending_ - The transferee is given a list of groups to which they currently belong. The indicate (with, say, checkboxes) which, if any, groups they will be leaving. For each group they indicate they are leaving, they must specify an end date. 
   * _Memberships that are starting_ - The transferee is asked if they will be joining one or more new groups. If they answer affirmatively, they must specify:
     * Which group they are joining (preferably from a list of groups that includes all MOU groups except those of which they are already member or into which they are already transferring). 
