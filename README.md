@@ -16,8 +16,8 @@ In all cases except for transfers into the LIGO Lab, the transferee initiates th
 The information is split into three categories:
   * _Memberships that are ending_ - The transferee is given a list of groups to which they currently belong. The indicate (with, say, checkboxes) which, if any, groups they will be leaving. For each group they indicate they are leaving, they must specify an end date. 
   * _Memberships that are starting_ - The transferee is asked if they will be joining one or more new groups. If they answer affirmatively, they must specify:
-    * Which group they are joining (preferably from a list of groups that includes all MOU groups except those of which they are already member or into which they are already transferring). 
-    * If they select a federated group, they are given a list of institutions within that federation that they can join. 
+    * Which group they are joining (preferably from a list of groups that includes all MOU groups except a) those of which they are already member or b) into which they are already transferring or c) the LIGO Laboratory Federated group). 
+    * If they select a federated group (other than the LIGO Laboratory Federated group), they are given a list of institutions within that federation that they can join. 
     * If they are joining the LIGO Lab federated group, they are asked whether they want to be an LSC member. They default to Lab Personnel group and, if they indicate LSC member, to Lab LSC member. The case of Lab LSC member but not Lab personnel is unusual and will be handled by hand.
     * When membership in the new group should begin. 
     * If they are joining another group. If they indicate they are, then indicate the same information for the next group they are joining.
