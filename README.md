@@ -74,7 +74,7 @@ The transfer into the group of the approver is finalized, and email is sent to t
   * the list of current groups to which the transferee belongs with their end dates
   * the list of pending groups to which the transferee has been approved with their start and end dates
 
-## _**For sponsored transfers**
+## _**For sponsored transfers**_
 This is the case for transfers into (but not out of) the LIGO Lab federated group.
 
 ### _**What information is supplied to the sponsor?**_ 
