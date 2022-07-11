@@ -24,9 +24,8 @@ The information is split into three categories:
   * _Memberships that are ending_ - The transferee is given a list of institutions to which they currently belong. They indicate (with, say, checkboxes) which, if any, institutions they will be leaving. For each institution they they are leaving, they must specify an end date. 
   * _Memberships that are starting_ - The transferee is asked if they will be joining one or more new institutions. If they answer affirmatively, they must specify:
     * Which institution they are leaving (preferably from a list of insitutions that includes all LIGO institutions except: 
-     1. those of which they are already member or 
-     2. those into which they are already transferring or 
-     3. the LIGO Laboratory Federated group). 
+     - those of which they are already member or 
+     - those into which they are already transferring or  
     * When membership at the new institution should begin. 
     * If they are joining another institution. If they indicate they are, then indicate the same information for the next institution they are joining.
   * _Other information_ A text box is provided so that the transferee can provide any other information they feel is relevant.
