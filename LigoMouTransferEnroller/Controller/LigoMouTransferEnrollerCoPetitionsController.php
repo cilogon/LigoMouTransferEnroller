@@ -31,7 +31,8 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
   // Class name, used by Cake
   public $name = "LigoMouTransferEnrollerCoPetitionsController";
 
-  public $uses = array("CoPetition");
+  public $uses = array("CoPetition",
+                       "LigoMouTransferEnroller.LigoMouTransferEnroller");
 
   /**
    * Plugin functionality following petitionerAttributes step
@@ -41,8 +42,30 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
    */
 
   protected function execute_plugin_petitionerAttributes($id, $onFinish) {
-    // Do some work here, then redirect when finished.
+    // XXX GET requests will colloct the attributes i new to create the view
+    // XXX POST requests will save the choices in the database
 
-    $this->redirect($onFinish);
+
+    $args = array();
+    $args['conditions']['LigoMouTransferEnroller.co_enrollment_flow_wedge_id'] = $this->viewVars['vv_efwid'];
+    $args['contain'] = array('TransferPreserveAppointment');
+
+    $ligo_enroller = $this->LigoMouTransferEnroller->find('first', $args);
+
+    if($this->request->is('get')) {
+      $this->set('vv_cous', $this->LigoMouTransferEnroller->getActivePersonRoles($this->cur_co['Co']['id'], $this->Session->read('Auth.User.username')));
+
+      // Return in case of no configuration
+      if(empty($ligo_enroller["TransferPreserveAppointment"])) {
+        return;
+      }
+
+      $this->set('vv_introduction', $ligo_enroller["TransferPreserveAppointment"][0]["introduction"]);
+    } elseif ($this->request->is('post')) {
+
+    }
+
+
+//    $this->redirect($onFinish);
   }
 }

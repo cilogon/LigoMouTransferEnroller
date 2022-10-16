@@ -53,6 +53,39 @@ class LigoMouTransferEnroller extends AppModel {
   );
 
   /**
+   * Return CO Person Active CO Person Roles
+   *
+   * @since  COmanage Registry v4.1.0
+   * @param  Integer      $coId       CO  ID
+   * @param  String       $identifier CO Person Identifier
+   * @return array|null   list of COUs
+   */
+
+  public function getActivePersonRoles($coId, $identifier) {
+    // Get COU memberships, array(id => name)
+    $args = array();
+    $args['joins'][0]['table'] = 'cm_co_person_roles';
+    $args['joins'][0]['alias'] = 'CoPersonRole';
+    $args['joins'][0]['type'] = 'INNER';
+    $args['joins'][0]['conditions'][0] = 'CoPersonRole.cou_id=Cou.id';
+    $args['joins'][1]['table'] = 'cm_identifiers';
+    $args['joins'][1]['alias'] = 'Identifier';
+    $args['joins'][1]['type'] = 'INNER';
+    $args['joins'][1]['conditions'][0] = 'CoPersonRole.co_person_id=Identifier.co_person_id';
+    $args['conditions']['Cou.co_id'] = $coId;
+    $args['conditions']['CoPersonRole.status'] = StatusEnum::Active;
+    $args['conditions'][] = 'CoPersonRole.cou_id IS NOT null';
+    $args['conditions']['Identifier.identifier'] = $identifier;
+    $args['conditions']['Identifier.status'] = StatusEnum::Active;
+    $args['order'] = 'Cou.name ASC';
+    $args['fields'] = array('Cou.id', 'Cou.name');
+    $args['contain'] = false;
+
+    $Cou = ClassRegistry::init('Cou');
+    return $Cou->find('list', $args);
+  }
+
+  /**
    * Expose menu items.
    *
    * @since COmanage Registry v4.1.0
