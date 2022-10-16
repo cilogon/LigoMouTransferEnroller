@@ -25,6 +25,12 @@
  * @license       Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
  */
 
+// Add breadcrumbs
+print $this->element("coCrumb");
+$this->Html->addCrumb(filter_var($title_for_layout,FILTER_SANITIZE_SPECIAL_CHARS));
+// Load custom css
+$this->Html->css('LigoMouTransferEnroller.mou_transfer', array('inline' => false));
+
 $l = 0;
 
 $args = array();
@@ -54,11 +60,42 @@ print $this->Form->hidden('co_enrollment_flow_wedge_id', array('default' => $vv_
       }
       ?>
 
+      <!--  Joint Appointment  -->
       <div class="modelbox">
-        <div class="boxtitle"></div>
-        <div class="modelbox-data">
-
+        <div class="boxtitle">
+          <?php print  _txt('fd.transfer_preserve_appointment.joint'); ?>
+          <div class="desc"><?php print  _txt('fd.transfer_preserve_appointment.joint.desc'); ?></div>
         </div>
+
+        <div class="modelbox-data">
+          <div class="form-group">
+            <?php
+            print $this->Form->checkbox('joint_appointment', array('checked' => false, 'class' => 'form-check-input'));
+            print $this->Form->label('joint_appointment', _txt('fd.transfer_preserve_appointment.joint')) . PHP_EOL;
+            ?>
+          </div>
+
+        </div><!-- modelbox-data -->
+        <span class="clearfix"></span>
+      </div>
+
+      <!--  Active CO Person Roles  -->
+      <div class="modelbox">
+        <div class="boxtitle">
+          <?php print  _txt('fd.transfer_preserve_appointment.roles'); ?>
+          <div class="desc"><?php print  _txt('fd.transfer_preserve_appointment.roles.desc'); ?></div>
+        </div>
+
+        <div class="modelbox-data">
+          <?php foreach($vv_cous as $couId => $couName): ?>
+          <div class="form-group">
+            <?php
+            print $this->Form->checkbox($couId, array('checked' => true, 'class' => 'form-check-input'));
+            print $this->Form->label($couId, $couName) . PHP_EOL;
+            ?>
+          </div>
+          <?php endforeach; ?>
+        </div><!-- modelbox-data -->
         <span class="clearfix"></span>
       </div>
 

@@ -42,6 +42,12 @@ $cm_ligo_mou_transfer_enroller_texts['en_US'] = array(
   'er.transfer_preserve_appointment.lmtid.specify' => 'Named parameter lmtid was not found',
   'er.transfer_preserve_appointment.id.specify'    => 'Id was not found',
 
+  // Fields
+  'fd.transfer_preserve_appointment.joint'          => 'Joint Appointment',
+  'fd.transfer_preserve_appointment.joint.desc'     => 'Check the box to continue the existing membership(s) listed below, even after the new membership is approved',
+  'fd.transfer_preserve_appointment.roles'          => 'Institutional Memberships',
+  'fd.transfer_preserve_appointment.roles.desc'     => 'Uncheck the institutional memberships that you wish to unsubscribe from.',
+
   // Plugin texts
   'pl.transfer_preserve_appointment.introduction'      => 'Introduction',
   'pl.transfer_preserve_appointment.introduction.desc' => 'A short introductory text describing the purpose or other information about the Joint Appointment Configuration',
