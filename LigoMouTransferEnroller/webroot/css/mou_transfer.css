@@ -1,7 +1,13 @@
-.ligo_mou_transfer_enroller_co_petitions .form-group label {
+.ligo_mou_transfer_enroller_co_petitions .form-group > label {
     margin-left: 1.5em;
 }
 
 .ligo_mou_transfer_enroller_co_petitions .form-group input[type=checkbox] {
     margin-left: 0;
+}
+
+.ligo_mou_transfer_enroller_co_petitions .transaction-mode {
+    display: flex;
+    flex-flow: column;
+    align-items: self-start;
 }

@@ -77,4 +77,32 @@
       <col>ligo_mou_transfer_enroller_id</col>
     </index>
   </table>
+
+  <table name="ligo_mou_transfer_petitions">
+    <field name="id" type="I">
+      <key />
+      <autoincrement />
+    </field>
+    <field name="cou_id" type="I">
+      <constraint>REFERENCES cm_cous(id)</constraint>
+    </field>
+    <field name="co_petition_id" type="I">
+      <constraint>REFERENCES cm_co_petitions(id)</constraint>
+    </field>
+    <field name="mode" type="C" size="3" />
+    <field name="maintain_membership" type="L"/>
+    <field name="created" type="T" />
+    <field name="modified" type="T" />
+    <field name="valid_through" type="T" />
+    <field name="ligo_mou_transfer_enroller_id" type="I">
+      <constraint>REFERENCES cm_ligo_mou_transfer_enrollers(id)</constraint>
+    </field>
+    <field name="co_enrollment_flow_wedge_id" type="I">
+      <constraint>REFERENCES cm_co_enrollment_flow_wedges(id)</constraint>
+    </field>
+
+    <index name="ligo_transfer_petition_i1">
+      <col>co_petition_id</col>
+    </index>
+  </table>
 </schema>
