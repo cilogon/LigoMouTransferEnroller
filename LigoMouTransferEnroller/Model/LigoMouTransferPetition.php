@@ -33,7 +33,8 @@ class LigoMouTransferPetition extends AppModel {
   public $belongsTo = array(
     "LigoMouTransferEnroller.LigoMouTransferEnroller",
     "Cou",
-    "CoEnrollmentFlowWedge"
+    "CoEnrollmentFlowWedge",
+    "CoPetition"
   );
 
   // Validation rules for table elements
@@ -44,6 +45,11 @@ class LigoMouTransferPetition extends AppModel {
       'allowEmpty' => false
     ),
     'co_enrollment_flow_wedge_id' => array(
+      'rule' => 'numeric',
+      'required' => true,
+      'allowEmpty' => false
+    ),
+    'co_petition_id' => array(
       'rule' => 'numeric',
       'required' => true,
       'allowEmpty' => false
@@ -70,4 +76,22 @@ class LigoMouTransferPetition extends AppModel {
       )
     )
   );
+
+  /**
+   * Obtain the Petition Transfer attributes
+   *
+   * @since  COmanage Registry v4.1.0
+   * @param  integer Wedge Plugin Id
+   * @param  integer Petition Id
+   * @return array List of Petition Transfer Attributes
+   */
+
+  public function getPetitionTransferAttributes($wedgeId, $petitionId) {
+    $args = array();
+    $args['conditions']['LigoMouTransferPetition.co_enrollment_flow_wedge_id'] = $wedgeId;
+    $args['conditions']['LigoMouTransferPetition.co_petition_id'] = $petitionId;
+    $args['contain'] = true;
+
+    return $this->find('all', $args);
+  }
 }

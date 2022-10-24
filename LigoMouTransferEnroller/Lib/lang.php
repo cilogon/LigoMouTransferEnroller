@@ -47,6 +47,7 @@ $cm_ligo_mou_transfer_enroller_texts['en_US'] = array(
   'fd.transfer_preserve_appointment.never'          => 'Never',
   'fd.transfer_preserve_appointment.info'           => 'Uncheck to unsubscribe.',
   'fd.transfer_preserve_appointment.mode'           => 'Transaction Mode:',
+  'fd.transfer_preserve_appointment.mode-a'         => 'Mode',
 
 
   // Plugin texts
