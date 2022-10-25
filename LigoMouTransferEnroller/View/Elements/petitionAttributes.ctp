@@ -45,7 +45,13 @@ $attributes = $this->PetitionAttribute
     <?php foreach($attributes as $attr): ?>
     <div class="modelbox">
       <div class="boxtitle">
-        <?php print $attr["Cou"]["name"] ?>
+        <?php
+        print $this->Html->link($attr["Cou"]["name"],
+                                array('controller' => 'co_person_roles',
+                                      'action' => 'view',
+                                  $attr["LigoMouTransferPetition"]["co_person_role_id"]),
+                                array('class' => 'boxtitle-link'));
+        ?>
         <?php if(!$attr["LigoMouTransferPetition"]['maintain_membership']): ?>
         <div class="desc">
           <?php print  _txt('fd.transfer_preserve_appointment.expires_at',

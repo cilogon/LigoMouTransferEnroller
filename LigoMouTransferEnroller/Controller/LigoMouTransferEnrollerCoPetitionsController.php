@@ -59,9 +59,6 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
         $this->Session->read('Auth.User.username')
       );
       $this->set('vv_person_roles', $co_person_roles);
-      $this->set('vv_cous', Hash::combine($co_person_roles, '{n}.Cou.id', '{n}.Cou.name'));
-      //XXX According to our use case there will only be one active Role for each institution
-      $this->set('vv_role_expiration', Hash::combine($co_person_roles, '{n}.Cou.id', '{n}.CoPersonRole.valid_through'));
       // Return in case of no configuration
       if (empty($ligo_enroller["TransferPreserveAppointment"])) {
         return;

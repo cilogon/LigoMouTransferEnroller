@@ -72,14 +72,14 @@ print $this->Form->hidden('co_enrollment_flow_wedge_id', array('default' => $vv_
       ?>
 
       <!--  Active CO Person Roles  -->
-      <?php foreach($vv_cous as $couId => $couName): ?>
+      <?php foreach($vv_person_roles as $role): ?>
       <div class="modelbox">
         <div class="boxtitle">
-          <?php print $couName ?>
+          <?php print $role['Cou']['name'] ?>
           <div class="desc">
             <?php print  _txt('fd.transfer_preserve_appointment.expires_at',
                                               array(
-                                                $vv_role_expiration[$couId] ?? _txt('fd.transfer_preserve_appointment.never'
+                                                $role["CoPersonRole"]['valid_through'] ?? _txt('fd.transfer_preserve_appointment.never'
                                                 ))); ?>
           </div>
         </div>
@@ -87,7 +87,8 @@ print $this->Form->hidden('co_enrollment_flow_wedge_id', array('default' => $vv_
         <div class="modelbox-data">
           <div class="form-group">
             <?php
-            print $this->Form->hidden("LigoMouTransferPetition.{$l}.cou_id", array('default' => $couId));
+            print $this->Form->hidden("LigoMouTransferPetition.{$l}.cou_id", array('default' => $role['Cou']['id']));
+            print $this->Form->hidden("LigoMouTransferPetition.{$l}.co_person_role_id", array('default' => $role["CoPersonRole"]["id"]));
             print $this->Form->hidden("LigoMouTransferPetition.{$l}.ligo_mou_transfer_enroller_id", array('default' => $vv_ligo_enroller["LigoMouTransferEnroller"]["id"]));
             print $this->Form->hidden("LigoMouTransferPetition.{$l}.co_enrollment_flow_wedge_id", array('default' => $vv_efwid));
             print $this->Form->hidden("LigoMouTransferPetition.{$l}.co_petition_id", array('default' => $vv_petition_id));

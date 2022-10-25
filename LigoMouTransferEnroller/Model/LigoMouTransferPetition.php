@@ -59,6 +59,11 @@ class LigoMouTransferPetition extends AppModel {
       'required' => true,
       'allowEmpty' => false
     ),
+    'co_person_role_id' => array(
+      'rule' => 'numeric',
+      'required' => true,
+      'allowEmpty' => false
+    ),
     'mode' => array(
       'rule' => array('inList', array(LigoMouTransferEnrollerTransferPolicyEnum::LeaveNow,
                                       LigoMouTransferEnrollerTransferPolicyEnum::LeaveOnStart)),

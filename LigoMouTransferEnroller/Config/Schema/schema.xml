@@ -89,6 +89,9 @@
     <field name="co_petition_id" type="I">
       <constraint>REFERENCES cm_co_petitions(id)</constraint>
     </field>
+    <field name="co_person_role_id" type="I">
+      <constraint>REFERENCES cm_co_person_roles(id)</constraint>
+    </field>
     <field name="mode" type="C" size="3" />
     <field name="maintain_membership" type="L"/>
     <field name="created" type="T" />
