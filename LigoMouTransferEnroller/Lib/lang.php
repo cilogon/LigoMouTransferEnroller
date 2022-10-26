@@ -43,10 +43,12 @@ $cm_ligo_mou_transfer_enroller_texts['en_US'] = array(
   'er.transfer_preserve_appointment.id.specify'    => 'Id was not found',
 
   // Fields
-  'fd.transfer_preserve_appointment.joint'          => 'Joint Appointment',
-  'fd.transfer_preserve_appointment.joint.desc'     => 'Check the box to continue the existing membership(s) listed below, even after the new membership is approved',
-  'fd.transfer_preserve_appointment.roles'          => 'Institutional Memberships',
-  'fd.transfer_preserve_appointment.roles.desc'     => 'Uncheck the institutional memberships that you wish to unsubscribe from.',
+  'fd.transfer_preserve_appointment.expires_at'     => 'Expires at: <b>%1$s</b>',
+  'fd.transfer_preserve_appointment.never'          => 'Never',
+  'fd.transfer_preserve_appointment.info'           => 'Uncheck to unsubscribe.',
+  'fd.transfer_preserve_appointment.mode'           => 'Transaction Mode:',
+  'fd.transfer_preserve_appointment.mode-a'         => 'Mode',
+
 
   // Plugin texts
   'pl.transfer_preserve_appointment.introduction'      => 'Introduction',

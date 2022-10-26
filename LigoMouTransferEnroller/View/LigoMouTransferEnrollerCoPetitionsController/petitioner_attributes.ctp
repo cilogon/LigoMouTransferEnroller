@@ -50,6 +50,17 @@ if(!empty($vv_petition_token)) {
 
 print $this->Form->hidden('co_enrollment_flow_wedge_id', array('default' => $vv_efwid));
 ?>
+  <script type="text/javascript">
+    function handleVisibility(elem) {
+      if($(elem).is(':checked')) {
+        $(elem).parent().find('.transaction-mode').hide();
+      } else {
+        $(elem).parent().find('.transaction-mode').show();
+      }
+    }
+  </script>
+
+
   <div id="tabs-attributes">
     <div class="fields">
       <?php
@@ -60,44 +71,61 @@ print $this->Form->hidden('co_enrollment_flow_wedge_id', array('default' => $vv_
       }
       ?>
 
-      <!--  Joint Appointment  -->
-      <div class="modelbox">
-        <div class="boxtitle">
-          <?php print  _txt('fd.transfer_preserve_appointment.joint'); ?>
-          <div class="desc"><?php print  _txt('fd.transfer_preserve_appointment.joint.desc'); ?></div>
-        </div>
-
-        <div class="modelbox-data">
-          <div class="form-group">
-            <?php
-            print $this->Form->checkbox('joint_appointment', array('checked' => false, 'class' => 'form-check-input'));
-            print $this->Form->label('joint_appointment', _txt('fd.transfer_preserve_appointment.joint')) . PHP_EOL;
-            ?>
-          </div>
-
-        </div><!-- modelbox-data -->
-        <span class="clearfix"></span>
-      </div>
-
       <!--  Active CO Person Roles  -->
+      <?php foreach($vv_person_roles as $role): ?>
       <div class="modelbox">
         <div class="boxtitle">
-          <?php print  _txt('fd.transfer_preserve_appointment.roles'); ?>
-          <div class="desc"><?php print  _txt('fd.transfer_preserve_appointment.roles.desc'); ?></div>
+          <?php print $role['Cou']['name'] ?>
+          <div class="desc">
+            <?php print  _txt('fd.transfer_preserve_appointment.expires_at',
+                                              array(
+                                                $role["CoPersonRole"]['valid_through'] ?? _txt('fd.transfer_preserve_appointment.never'
+                                                ))); ?>
+          </div>
         </div>
 
         <div class="modelbox-data">
-          <?php foreach($vv_cous as $couId => $couName): ?>
           <div class="form-group">
             <?php
-            print $this->Form->checkbox($couId, array('checked' => true, 'class' => 'form-check-input'));
-            print $this->Form->label($couId, $couName) . PHP_EOL;
+            print $this->Form->hidden("LigoMouTransferPetition.{$l}.cou_id", array('default' => $role['Cou']['id']));
+            print $this->Form->hidden("LigoMouTransferPetition.{$l}.co_person_role_id", array('default' => $role["CoPersonRole"]["id"]));
+            print $this->Form->hidden("LigoMouTransferPetition.{$l}.ligo_mou_transfer_enroller_id", array('default' => $vv_ligo_enroller["LigoMouTransferEnroller"]["id"]));
+            print $this->Form->hidden("LigoMouTransferPetition.{$l}.co_enrollment_flow_wedge_id", array('default' => $vv_efwid));
+            print $this->Form->hidden("LigoMouTransferPetition.{$l}.co_petition_id", array('default' => $vv_petition_id));
+            print $this->Form->hidden("LigoMouTransferPetition.{$l}.valid_through", array('default' => date('Y-m-d H:i:s')));
+
+
+            $attrs = array();
+            $attrs['onClick'] = 'javascript:handleVisibility(this)';
+            $attrs['checked'] = true;
+            $attrs['class'] = 'form-check-input';
+
+            print $this->Form->checkbox("LigoMouTransferPetition.{$l}.maintain_membership", $attrs);
+            print $this->Form->label("LigoMouTransferPetition.{$l}.maintain_membership", _txt('fd.transfer_preserve_appointment.info')) . PHP_EOL;
             ?>
+            <div class="transaction-mode" style="display: none">
+              <?php
+              $attrs = array();
+              $attrs['empty'] = false;
+              print $this->Form->label("LigoMouTransferPetition.{$l}.mode", _txt('fd.transfer_preserve_appointment.mode')) . PHP_EOL;
+              print $this->Form->select("LigoMouTransferPetition.{$l}.mode",
+                                        LigoMouTransferEnrollerTransferPolicyEnum::type,
+                                        $attrs);
+
+              if($this->Form->isFieldError("LigoMouTransferPetition.{$l}.mode")) {
+                print $this->Form->error("LigoMouTransferPetition.{$l}.mode");
+              }
+            ?>
+            </div>
           </div>
-          <?php endforeach; ?>
         </div><!-- modelbox-data -->
         <span class="clearfix"></span>
       </div>
+      <?php
+      $l++;
+      endforeach;
+      ?>
+
 
       <?php if($e): ?>
         <div id="<?php print $this->action; ?>_co_petition_attrs_submit" class="submit-box">
