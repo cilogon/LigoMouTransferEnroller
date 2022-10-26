@@ -53,20 +53,8 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
     $this->set('vv_petition_id', $id);
 
 
-    if ($this->request->is('get')) {
-      $co_person_roles = $this->LigoMouTransferEnroller->getActivePersonRoles(
-        $this->cur_co['Co']['id'],
-        $this->Session->read('Auth.User.username')
-      );
-      $this->set('vv_person_roles', $co_person_roles);
-      // Return in case of no configuration
-      if (empty($ligo_enroller["TransferPreserveAppointment"])) {
-        return;
-      }
-
-      $this->set('vv_introduction', $ligo_enroller["TransferPreserveAppointment"][0]["introduction"]);
-    } elseif ($this->request->is('post')
-              && !empty($this->request->data["CoPetition"])) {
+    if ($this->request->is('post')
+        && !empty($this->request->data["CoPetition"])) {
       $requested_roles = $this->LigoMouTransferEnroller->getCoPersonRoleFromPetition($this->cur_co['Co']['id'],
                                                                                      $id,
                                                                                      $this->Session->read('Auth.User.username'));
@@ -88,5 +76,24 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
 
       $this->redirect($onFinish);
     }
+
+    // GET Request
+    $co_person_roles = $this->LigoMouTransferEnroller->getActivePersonRoles(
+      $this->cur_co['Co']['id'],
+      $this->Session->read('Auth.User.username')
+    );
+
+    // The user has no Roles. Redirect on Finish
+    if (empty($co_person_roles)) {
+      $this->redirect($onFinish);
+    }
+
+    $this->set('vv_person_roles', $co_person_roles);
+    // Return in case of no configuration
+    if (empty($ligo_enroller["TransferPreserveAppointment"])) {
+      return;
+    }
+
+    $this->set('vv_introduction', $ligo_enroller["TransferPreserveAppointment"][0]["introduction"]);
   }
 }
