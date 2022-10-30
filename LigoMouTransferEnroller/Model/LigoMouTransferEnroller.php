@@ -41,7 +41,9 @@ class LigoMouTransferEnroller extends AppModel {
   // Association rules from this model to other models
   public $belongsTo = array("CoEnrollmentFlowWedge");
 
-  public $hasMany = array("LigoMouTransferEnroller.TransferPreserveAppointment" => array('dependent' => true));
+  public $hasMany = array(
+    "LigoMouTransferEnroller.TransferPreserveAppointment" => array('dependent' => true),
+    "LigoMouTransferPetition" => array("dependent" => true));
 
   // Default display field for cake generated views
   public $displayField = "co_enrollment_flow_wedge_id";

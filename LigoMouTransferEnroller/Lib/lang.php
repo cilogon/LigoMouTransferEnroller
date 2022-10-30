@@ -49,6 +49,7 @@ $cm_ligo_mou_transfer_enroller_texts['en_US'] = array(
   'fd.transfer_preserve_appointment.mode'           => 'Transaction Mode:',
   'fd.transfer_preserve_appointment.mode-a'         => 'Mode',
 
+  'pl.ligo_mou_transfer_enrollers.role-update'      => 'Updated Co Person Role (%1$s) expiration date.',
 
   // Plugin texts
   'pl.transfer_preserve_appointment.introduction'      => 'Introduction',

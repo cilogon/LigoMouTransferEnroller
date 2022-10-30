@@ -96,4 +96,77 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
 
     $this->set('vv_introduction', $ligo_enroller["TransferPreserveAppointment"][0]["introduction"]);
   }
+
+  /**
+   * Plugin functionality following approve step
+   *
+   * @param   Integer  $id        CO Petition ID
+   * @param   Array    $onFinish  URL, in Cake format
+   */
+
+  protected function execute_plugin_approve($id, $onFinish) {
+    $args                                                                      = array();
+    $args['conditions']['LigoMouTransferEnroller.co_enrollment_flow_wedge_id'] = $this->viewVars['vv_efwid'];
+
+    $ligo_enroller = $this->LigoMouTransferEnroller->find('first', $args);
+
+    if(empty($ligo_enroller["LigoMouTransferPetition"])) {
+      $this->redirect($onFinish);
+    }
+
+    $ligo_transfer_current_petitions = array_filter(
+      $ligo_enroller["LigoMouTransferPetition"],
+      static function ($petition) use ($id) {
+        return $petition['co_petition_id'] == $id;
+      }
+    );
+
+    if(empty($ligo_transfer_current_petitions)) {
+      $this->redirect($onFinish);
+    }
+
+    // Get the petition
+    $petition_record = $this->CoPetition->find('first', array(
+      'conditions' => array('CoPetition.id' => $id),
+      'contain' => false
+    ));
+
+    // The petition is not approved. Return to the Petition
+    if($petition_record['CoPetition']["status"] != PetitionStatusEnum::Approved) {
+      $this->redirect($onFinish);
+    }
+
+    foreach($ligo_transfer_current_petitions as $handle_petition) {
+      // This membership will be preserved. Continue
+      if($handle_petition['maintain_membership']) {
+        continue;
+      }
+
+      $this->CoPetition->EnrolleeCoPerson->CoPersonRole->id = $handle_petition['co_person_role_id'];
+      if(!$this->CoPetition->EnrolleeCoPerson
+                           ->CoPersonRole
+                           ->saveField('valid_through', $handle_petition['valid_through'])) {
+        throw new RuntimeException(_txt('er.db.save'));
+      }
+
+      $history_msg = _txt('pl.ligo_mou_transfer_enrollers.role-update', array($handle_petition['co_person_role_id']));
+
+      try {
+        // Record history
+        $this->CoPetition->EnrolleeCoPerson
+                         ->CoPersonRole
+                         ->HistoryRecord->record($petition_record['CoPetition']["enrollee_co_person_id"],
+                                                 $handle_petition['co_person_role_id'],
+                                                 null,
+                                                 $this->Session->read('Auth.User.co_person_id'),
+                                                 ActionEnum::CoPersonRoleEditedPetition,
+                                                 $history_msg);
+      } catch(Exception $e) {
+          throw new RuntimeException(_txt('er.db.save'));
+      }
+    }
+
+    // Finished the updates. Return to the petition
+    $this->redirect($onFinish);
+  }
 }
