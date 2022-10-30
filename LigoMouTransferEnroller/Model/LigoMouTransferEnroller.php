@@ -30,7 +30,10 @@ class LigoMouTransferEnroller extends AppModel {
   public $cmPluginType = "enroller";
 
   // Document foreign keys
-  public $cmPluginHasMany = array();
+  // Document foreign keys
+  public $cmPluginHasMany = array(
+    "CoEnrollmentFlowWedge" => "LigoMouTransferEnroller"
+  );
 
   // Add behaviors
   public $actsAs = array('Containable', 'Changelog' => array('priority' => 5));
@@ -147,5 +150,44 @@ class LigoMouTransferEnroller extends AppModel {
 
   public function cmPluginMenus() {
     return array();
+  }
+
+  /**
+   * Petition Attributes Before Save Hook
+   *
+   * @param  Integer $id CO Petition ID
+   * @param  Integer $enrollmentFlowId Enrollment Flow ID
+   * @param  Array   $requestData Attributes from submitted Petition
+   * @param  Integer $petitionerId  CO Person ID of the petitioner
+   *
+   * @since  COmanage Registry v4.1.0
+   * @return bool
+   * @throws OverflowException
+   */
+
+  public function beforeSaveAttributes($id, $enrollmentFlowId, &$requestData, $petitionerId) {
+    if(empty($requestData)
+       || empty($petitionerId)) {
+      return false;
+    }
+
+    // XXX Use the same logic as we do for Role linking
+    $args = array();
+    $args['conditions']['CoPersonRole.co_person_id'] = $petitionerId;
+    $args['conditions']['CoPersonRole.cou_id'] = $requestData["EnrolleeCoPersonRole"]["cou_id"];
+    $args['conditions']['NOT']['CoPersonRole.status'] = array(StatusEnum::Declined,
+                                                              StatusEnum::Deleted,
+                                                              StatusEnum::Denied,
+                                                              StatusEnum::Expired);
+    $args['contain'] = array('Cou');
+
+    $CoPersonRole = ClassRegistry::init('CoPersonRole');
+    $copr = $CoPersonRole->find('all', $args);
+
+    if(!empty($copr)) {
+      throw new OverflowException(_txt('er.pt.dupe.cou-a', array($copr[0]["Cou"]["name"])));
+    }
+
+    return true;
   }
 }
