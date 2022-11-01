@@ -37,67 +37,6 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
   );
 
   /**
-   * Plugin functionality following petitionerAttributes step
-   *
-   * @param   Integer  $id        CO Petition ID
-   * @param   Array    $onFinish  URL, in Cake format
-   */
-
-  protected function execute_plugin_petitionerAttributes($id, $onFinish) {
-    $args                                                                      = array();
-    $args['conditions']['LigoMouTransferEnroller.co_enrollment_flow_wedge_id'] = $this->viewVars['vv_efwid'];
-    $args['contain']                                                           = array('TransferPreserveAppointment');
-
-    $ligo_enroller = $this->LigoMouTransferEnroller->find('first', $args);
-    $this->set('vv_ligo_enroller', $ligo_enroller);
-    $this->set('vv_petition_id', $id);
-
-
-    if ($this->request->is('post')
-        && !empty($this->request->data["CoPetition"])) {
-      $requested_roles = $this->LigoMouTransferEnroller->getCoPersonRoleFromPetition($this->cur_co['Co']['id'],
-                                                                                     $id,
-                                                                                     $this->Session->read('Auth.User.username'));
-      if (empty($requested_roles)) {
-        throw new RuntimeException("Bad result");
-      }
-
-      $valid_from = $requested_roles['CoPersonRole']['valid_from'];
-      foreach ($this->request->data["LigoMouTransferPetition"] as $idx => $record) {
-        if ($record['mode'] === LigoMouTransferEnrollerTransferPolicyEnum::LeaveOnStart) {
-          $this->request->data["LigoMouTransferPetition"][$idx]['valid_through'] = $valid_from;
-        }
-      }
-
-      $LigoMouTransferPetition = ClassRegistry::init("LigoMouTransferPetition");
-      if (!$LigoMouTransferPetition->saveMany($this->request->data["LigoMouTransferPetition"])) {
-        throw new RuntimeException(_txt('er.db.save'));
-      }
-
-      $this->redirect($onFinish);
-    }
-
-    // GET Request
-    $co_person_roles = $this->LigoMouTransferEnroller->getActivePersonRoles(
-      $this->cur_co['Co']['id'],
-      $this->Session->read('Auth.User.username')
-    );
-
-    // The user has no Roles. Redirect on Finish
-    if (empty($co_person_roles)) {
-      $this->redirect($onFinish);
-    }
-
-    $this->set('vv_person_roles', $co_person_roles);
-    // Return in case of no configuration
-    if (empty($ligo_enroller["TransferPreserveAppointment"])) {
-      return;
-    }
-
-    $this->set('vv_introduction', $ligo_enroller["TransferPreserveAppointment"][0]["introduction"]);
-  }
-
-  /**
    * Plugin functionality following approve step
    *
    * @param   Integer  $id        CO Petition ID
@@ -162,11 +101,98 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
                                                  ActionEnum::CoPersonRoleEditedPetition,
                                                  $history_msg);
       } catch(Exception $e) {
-          throw new RuntimeException(_txt('er.db.save'));
+        throw new RuntimeException(_txt('er.db.save'));
       }
     }
 
     // Finished the updates. Return to the petition
     $this->redirect($onFinish);
+  }
+
+  /**
+   * Plugin functionality following petitionerAttributes step
+   *
+   * @param   Integer  $id        CO Petition ID
+   * @param   Array    $onFinish  URL, in Cake format
+   */
+
+  protected function execute_plugin_petitionerAttributes($id, $onFinish) {
+    $args                                                                      = array();
+    $args['conditions']['LigoMouTransferEnroller.co_enrollment_flow_wedge_id'] = $this->viewVars['vv_efwid'];
+    $args['contain']                                                           = array('TransferPreserveAppointment');
+
+    $ligo_enroller = $this->LigoMouTransferEnroller->find('first', $args);
+    $this->set('vv_ligo_enroller', $ligo_enroller);
+    $this->set('vv_petition_id', $id);
+
+    $requested_roles = $this->LigoMouTransferEnroller->getCoPersonRoleFromPetition($this->cur_co['Co']['id'],
+                                                                                   $id,
+                                                                                   $this->Session->read('Auth.User.username'));
+    if (empty($requested_roles)) {
+      throw new RuntimeException("Bad result");
+    }
+
+    if ($this->request->is('post')
+        && !empty($this->request->data["CoPetition"])) {
+
+      $valid_from = $requested_roles['CoPersonRole']['valid_from'];
+      foreach ($this->request->data["LigoMouTransferPetition"] as $idx => $record) {
+        if ($record['mode'] === LigoMouTransferEnrollerTransferPolicyEnum::LeaveOnStart) {
+          $this->request->data["LigoMouTransferPetition"][$idx]['valid_through'] = $valid_from;
+        }
+      }
+
+      $LigoMouTransferPetition = ClassRegistry::init("LigoMouTransferPetition");
+      if (!$LigoMouTransferPetition->saveMany($this->request->data["LigoMouTransferPetition"])) {
+        throw new RuntimeException(_txt('er.db.save'));
+      }
+
+      $this->redirect($onFinish);
+    }
+
+    // GET Request
+    $co_person_roles = $this->LigoMouTransferEnroller->getActivePersonRoles(
+      $this->cur_co['Co']['id'],
+      $this->Session->read('Auth.User.username')
+    );
+
+    // The user has no Roles. Redirect on Finish
+    if (empty($co_person_roles)) {
+      $this->redirect($onFinish);
+    }
+
+    // Check for duplicates
+    $active_cou_memberships = Hash::extract($co_person_roles, '{n}.Cou.id');
+    $active_cou_memberships_list = Hash::combine($co_person_roles, '{n}.Cou.id', '{n}.Cou.name');
+    if(in_array($requested_roles['CoPersonRole']["cou_id"], $active_cou_memberships)) {
+      $dbc = $this->CoPetition->getDataSource();
+      $dbc->begin();
+      try {
+        $this->CoPetition->updateStatus($id,
+                                        StatusEnum::Duplicate,
+                                        $this->Session->read('Auth.User.co_person_id'));
+      }
+      catch(Exception $e) {
+        $dbc->rollback();
+        throw new RuntimeException($e->getMessage());
+      }
+      $dbc->commit();
+      $this->Flash->set(_txt('er.pt.dupe.cou-a',
+                             array($active_cou_memberships_list[ $requested_roles['CoPersonRole']["cou_id"] ])),
+                             array('key' => 'error'));
+      $this->redirect(array('plugin' => null,
+                            'controller' => 'co_people',
+                            'action'     => 'canvas',
+                             $this->Session->read('Auth.User.co_person_id')));
+    }
+
+    // Render Joint appointment view
+    $this->set('vv_person_roles', $co_person_roles);
+    // Return in case of no configuration
+    if (empty($ligo_enroller["TransferPreserveAppointment"])) {
+      return;
+    }
+
+    $this->set('vv_introduction', $ligo_enroller["TransferPreserveAppointment"][0]["introduction"]);
   }
 }
