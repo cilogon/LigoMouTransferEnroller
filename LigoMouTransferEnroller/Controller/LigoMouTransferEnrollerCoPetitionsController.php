@@ -187,6 +187,7 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
     }
 
     // Render Joint appointment view
+    $this->set('vv_requested_cou', $requested_roles["Cou"]);
     $this->set('vv_person_roles', $co_person_roles);
     // Return in case of no configuration
     if (empty($ligo_enroller["TransferPreserveAppointment"])) {
