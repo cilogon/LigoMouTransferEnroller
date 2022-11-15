@@ -30,7 +30,10 @@ class LigoMouTransferEnroller extends AppModel {
   public $cmPluginType = "enroller";
 
   // Document foreign keys
-  public $cmPluginHasMany = array();
+  // Document foreign keys
+  public $cmPluginHasMany = array(
+    "CoEnrollmentFlowWedge" => "LigoMouTransferEnroller"
+  );
 
   // Add behaviors
   public $actsAs = array('Containable', 'Changelog' => array('priority' => 5));
@@ -38,7 +41,9 @@ class LigoMouTransferEnroller extends AppModel {
   // Association rules from this model to other models
   public $belongsTo = array("CoEnrollmentFlowWedge");
 
-  public $hasMany = array("LigoMouTransferEnroller.TransferPreserveAppointment" => array('dependent' => true));
+  public $hasMany = array(
+    "LigoMouTransferEnroller.TransferPreserveAppointment" => array('dependent' => true),
+    "LigoMouTransferPetition" => array("dependent" => true));
 
   // Default display field for cake generated views
   public $displayField = "co_enrollment_flow_wedge_id";
@@ -118,21 +123,15 @@ class LigoMouTransferEnroller extends AppModel {
 
   public function getCoPersonRoleFromPetition($coId, $coPetitionId, $identifier) {
     $args                                        = array();
-    $args['joins'][0]['table']                   = 'cm_cous';
-    $args['joins'][0]['alias']                   = 'Cou';
+    $args['joins'][0]['table']                   = 'cm_co_petitions';
+    $args['joins'][0]['alias']                   = 'CoPetition';
     $args['joins'][0]['type']                    = 'INNER';
-    $args['joins'][0]['conditions'][0]           = 'Cou.id=CoPersonRole.cou_id';
-    $args['joins'][0]['conditions'][1]           = 'Cou.co_id=' . $coId;
-    $args['joins'][1]['table']                   = 'cm_co_petitions';
-    $args['joins'][1]['alias']                   = 'CoPetition';
-    $args['joins'][1]['type']                    = 'INNER';
-    $args['joins'][1]['conditions'][0]           = 'CoPetition.cou_id=Cou.id';
-    $args['joins'][1]['conditions'][1]           = 'CoPetition.id=' . $coPetitionId;
+    $args['joins'][0]['conditions'][0]           = 'CoPetition.cou_id=Cou.id';
+    $args['joins'][0]['conditions'][1]           = 'CoPetition.id=' . $coPetitionId;
     $args['conditions'][]                        = "CoPetition.enrollee_co_person_id=CoPersonRole.co_person_id";
     $args['conditions'][]                        = "CoPersonRole.actor_identifier='{$identifier}'";
     $args['conditions'][]                        = 'CoPersonRole.co_person_role_id IS NULL';
     $args['conditions'][]                        = 'CoPersonRole.deleted IS NOT TRUE';
-    $args['contain'] = false;
 
     $CoPersonRole = ClassRegistry::init('CoPersonRole');
     return $CoPersonRole->find('first', $args);

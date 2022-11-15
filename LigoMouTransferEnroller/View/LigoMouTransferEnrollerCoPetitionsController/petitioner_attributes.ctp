@@ -63,6 +63,11 @@ print $this->Form->hidden('co_enrollment_flow_wedge_id', array('default' => $vv_
 
   <div id="tabs-attributes">
     <div class="fields">
+      <div class="co-info-topbox">
+        <em class="material-icons">info</em>
+        <?php print _txt('pl.transfer_preserve_appointment.cou-info', array($vv_requested_cou['name'])); ?>
+      </div>
+
       <?php
       $e = true;
       // Render conclusion text for new petitions
@@ -70,6 +75,12 @@ print $this->Form->hidden('co_enrollment_flow_wedge_id', array('default' => $vv_
         print '<div class="modelbox d-flex"><div class="petition-attr-introduction">' . $vv_introduction . "</div></div>";
       }
       ?>
+
+<!--      <div class="modelbox d-flex">-->
+<!--        <div class="petition-attr-introduction">-->
+<!--          --><?php //print _txt('pl.transfer_preserve_appointment.cou-info', array($vv_requested_cou['name'])); ?>
+<!--        </div>-->
+<!--      </div>-->
 
       <!--  Active CO Person Roles  -->
       <?php foreach($vv_person_roles as $role): ?>

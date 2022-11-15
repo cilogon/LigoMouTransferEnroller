@@ -11,3 +11,7 @@
     flex-flow: column;
     align-items: self-start;
 }
+
+.ligo_mou_transfer_enroller_co_petitions.petitionerAttributes .co-info-topbox {
+    margin: 0.5em 0.5em 0.5em 0;
+}

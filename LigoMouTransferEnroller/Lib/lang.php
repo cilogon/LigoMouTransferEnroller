@@ -49,8 +49,11 @@ $cm_ligo_mou_transfer_enroller_texts['en_US'] = array(
   'fd.transfer_preserve_appointment.mode'           => 'Transaction Mode:',
   'fd.transfer_preserve_appointment.mode-a'         => 'Mode',
 
+  // Actions
+  'pl.ligo_mou_transfer_enrollers.role-update'      => 'Updated Co Person Role (%1$s) expiration date.',
 
   // Plugin texts
+  'pl.transfer_preserve_appointment.cou-info'          => 'You requested access to the COU <b>"%1$s"</b>',
   'pl.transfer_preserve_appointment.introduction'      => 'Introduction',
   'pl.transfer_preserve_appointment.introduction.desc' => 'A short introductory text describing the purpose or other information about the Joint Appointment Configuration',
 );
