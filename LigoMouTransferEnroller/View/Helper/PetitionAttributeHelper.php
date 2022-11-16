@@ -43,4 +43,20 @@ class PetitionAttributeHelper extends AppHelper {
     $LigoMouTransferPetition = ClassRegistry::init('LigoMouTransferEnroller.LigoMouTransferPetition');
     return $LigoMouTransferPetition->getPetitionTransferAttributes($wedgeId, $petitionId);
   }
+
+  /**
+   * Retrieve Plugin Configuration
+   *
+   * @since  COmanage Registry v4.1.0
+   * @param  int $wedgeId    Wedge Plugin Id
+   * @return array LigoMouTransferEnroller
+   */
+
+  public function getCfg($wedgeId) {
+    $LigoMouTransferEnroller = ClassRegistry::init('LigoMouTransferEnroller.LigoMouTransferEnroller');
+    $args                                                                      = array();
+    $args['conditions']['LigoMouTransferEnroller.co_enrollment_flow_wedge_id'] = $wedgeId;
+
+    return $LigoMouTransferEnroller->find('first', $args);
+  }
 }

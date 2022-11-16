@@ -38,6 +38,7 @@
     <field name="co_enrollment_flow_wedge_id" type="I">
       <constraint>REFERENCES cm_co_enrollment_flow_wedges(id)</constraint>
     </field>
+    <field name="allow_edit" type="L" />
     <field name="created" type="T" />
     <field name="modified" type="T" />
     <field name="ligo_mou_transfer_enroller_id" type="I">

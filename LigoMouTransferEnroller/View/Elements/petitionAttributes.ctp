@@ -25,6 +25,9 @@
  * @license       Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
  */
 
+// For now we always allow edit
+$e = true;
+
 // Enumerate over all attributes defined for the enrollment flow associated with this petition.
 // We do a series of <?php tags because we can't mix and match embedded tag styles.
 
@@ -32,10 +35,30 @@ $this->PetitionAttribute = $this->Helpers->load('LigoMouTransferEnroller.Petitio
 
 $attributes = $this->PetitionAttribute
                    ->retrieveTranserChoices($vv_wedge['id'], $vv_petition['id']);
+$cfg = $this->PetitionAttribute->getCfg($vv_wedge['id']);
 
+// Load custom css
+$this->Html->css('LigoMouTransferEnroller.mou_transfer', array('inline' => false));
 ?>
 
 <li id="tabs-ligo-attributes" class="fieldGroup">
+  <?php if($cfg["LigoMouTransferEnroller"]["allow_edit"] === true
+           && $vv_petition['status'] == PetitionStatusEnum::PendingApproval): ?>
+  <div class="coAddEditButtons">
+  <?php print $this->Html->link(
+      _txt('op.edit') . _txt('pl.ligo_mou_transfer_enrollers.action-desc'),
+      array(
+        'plugin' => 'ligo_mou_transfer_enroller',
+        'controller' => "ligo_mou_petition_attributes",
+        'action' => 'edit',
+        $vv_petition['id'],
+        'wedgeid' => $vv_wedge['id']
+      ),
+      array('class' => 'editbutton')
+    ) . PHP_EOL; ?>
+  </div>
+  <?php endif; ?>
+
   <a href="#tabs-ligo-attributes" class="fieldGroupName">
     <em class="material-icons">indeterminate_check_box</em>
     <?php print _txt('ct.ligo_mou_transfer_enrollers.1'); ?>
@@ -65,10 +88,12 @@ $attributes = $this->PetitionAttribute
       <div class="modelbox-data">
         <div class="modelbox-data-field">
           <div class="modelbox-data-label">
-            <?php print "Membership"; ?>
+            <?php print _txt('fd.membership'); ?>
           </div>
           <div class="modelbox-data-value">
-            <?php print !$attr["LigoMouTransferPetition"]['maintain_membership'] ? "Expire" : "Maintain"; ?>
+            <?php print !$attr["LigoMouTransferPetition"]['maintain_membership'] ?
+              _txt('fd.transfer_preserve_appointment.expire')
+              :  _txt('fd.transfer_preserve_appointment.maintain'); ?>
           </div>
         </div>
         <?php if(!$attr["LigoMouTransferPetition"]['maintain_membership']): ?>

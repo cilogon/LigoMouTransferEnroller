@@ -71,5 +71,41 @@
 
   $crumbTxt = _txt('op.config');
   $this->Html->addCrumb($crumbTxt);
+
+  if($this->action != 'view') {
+    // Populate cross references
+    print $this->Form->hidden('co_enrollment_flow_wedge_id', array('default' => $ligo_mou_transfer_enrollers[0]["LigoMouTransferEnroller"]["co_enrollment_flow_wedge_id"])) . PHP_EOL;
+  }
 ?>
+
+
+<ul id="<?php print $this->action; ?>_ligo_mou_transfer_enrollers" class="fields form-list">
+  <li>
+    <div class="field-name">
+      <div class="field-title"><?php print _txt('fd.ligo_mou_transfer_enrollers.allow_edit'); ?></div>
+      <div class="field-desc"><?php print _txt('fd.ligo_mou_transfer_enrollers.allow_edit.desc'); ?></div>
+    </div>
+    <div class="field-info checkbox">
+      <?php print ($e
+        ? $this->Form->input('allow_edit')
+        : (isset($ligo_mou_transfer_enrollers[0]['LigoMouTransferEnroller']['allow_edit'])
+        && $ligo_mou_transfer_enrollers[0]['LigoMouTransferEnroller']['allow_edit']
+          ? _txt('fd.yes') : _txt('fd.no')));
+      print ' ' . $this->Form->label('allow_edit',_txt('fd.ligo_mou_transfer_enrollers.allow_edit'));
+      ?>
+  </li>
+  <?php if($e): ?>
+    <li class="fields-submit">
+      <div class="field-name">
+        <span class="required"><?php print _txt('fd.req'); ?></span>
+      </div>
+      <div class="field-info">
+        <?php print $this->Form->submit($submit_label); ?>
+      </div>
+    </li>
+  <?php endif; ?>
+</ul>
+
+<?php
+print $this->element("changelog");
 
