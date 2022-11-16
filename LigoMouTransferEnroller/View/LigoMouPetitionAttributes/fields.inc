@@ -1,6 +1,6 @@
 <!--
 /**
- * COmanage Registry LIGO MOU Petition Attributes Plugin Fields
+ * COmanage Registry LIGO MOU Petition Attributes Fields
  *
  * Portions licensed to the University Corporation for Advanced Internet
  * Development, Inc. ("UCAID") under one or more contributor license agreements.
@@ -67,6 +67,8 @@ $this->Html->addCrumb(generateCn($vv_co_petition["EnrolleeCoPerson"]["PrimaryNam
 $this->Html->addCrumb(_txt('ct.ligo_mou_petition_attributes.pl'));
 $this->Html->addCrumb(_txt('op.edit'));
 
+print $this->Form->hidden("LigoMouTransferEnroller.co_petition_id", array('default' => $vv_co_petition['CoPetition']['id'])) . PHP_EOL;
+
 ?>
 
 <div class="co-info-topbox">
@@ -86,23 +88,23 @@ $this->Html->addCrumb(_txt('op.edit'));
       continue;
     }
 
-    list($attribute_type, $attribute_key) = explode(':', $attribute["CoEnrollmentAttribute"]["attribute"]);
+    $attribute_field_name = $vv_available_attributes_restructured[$attribute["CoEnrollmentAttribute"]["attribute"]]['field'];
 
-    // Populate cross references
-    print $this->Form->hidden("LigoMouTransferEnroller.{$idx}.co_petition_id", array('default' => $attribute["co_petition_id"])) . PHP_EOL;
-    print $this->Form->hidden("LigoMouTransferEnroller.{$idx}.co_enrollment_attribute_id", array('default' => $attribute["co_enrollment_attribute_id"])) . PHP_EOL;
-    print $this->Form->hidden("LigoMouTransferEnroller.{$idx}.id", array('default' => $attribute["id"])) . PHP_EOL;
+    print $this->Form->hidden("LigoMouTransferEnroller.{$idx}.CoPetitionAttribute.id", array('default' => $vv_co_petition["CoPetitionAttribute"][$idx]["id"])) . PHP_EOL;
+
+
     ?>
     <li class="modelbox-data">
       <div class="field-name">
         <?php
         if($e) {
-          print $this->Form->label("LigoMouTransferEnroller.{$idx}.{$attribute_key}", _txt("fd.{$attribute_key}.tz", array($vv_tz)));
+          $model = $vv_available_attributes_restructured[$attribute["CoEnrollmentAttribute"]["attribute"]]['model'];
+          print $this->Form->label("LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}", _txt("fd.{$attribute_field_name}.tz", array($vv_tz)));
         } else {
-          print _txt("fd.{$attribute_key}");
+          print _txt("fd.{$attribute_field_name}");
         }
         ?><br />
-        <span class="field-descr"><?php print _txt("fd.{$attribute_key}.desc"); ?></span>
+        <span class="field-descr"><?php print _txt("fd.{$attribute_field_name}.desc"); ?></span>
       </div>
       <div class="field-info">
         <?php
@@ -120,7 +122,12 @@ $this->Html->addCrumb(_txt('op.edit'));
             }
           }
 
-          print $this->Form->text("LigoMouTransferEnroller.{$idx}.{$attribute_key}", $args);
+          print $this->Form->hidden("LigoMouTransferEnroller.{$idx}.CoPetitionAttribute.value",
+                                    array('default' => $args['value'])) . PHP_EOL;
+          if($model == 'CoPersonRole') {
+            print $this->Form->hidden("LigoMouTransferEnroller.{$idx}.{$model}.id", array('default' => $vv_co_person_role[0]["id"])) . PHP_EOL;
+          }
+          print $this->Form->text("LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}", $args);
         } else {
           if(!empty($attribute['value'])) {
             print $this->Time->format($attribute['value'], "%c $vv_tz", false, $vv_tz);
@@ -142,4 +149,4 @@ $this->Html->addCrumb(_txt('op.edit'));
       </div>
     </li>
   <?php endif; ?>
-</ul><!-- tabs-role -->
+</ul>

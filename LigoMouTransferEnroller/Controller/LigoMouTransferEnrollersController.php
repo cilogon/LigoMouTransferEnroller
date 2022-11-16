@@ -91,4 +91,21 @@ class LigoMouTransferEnrollersController extends SEWController {
     $this->set('permissions', $p);
     return($p[$this->action]);
   }
+
+  /**
+   * Perform a redirect back to the controller's default view.
+   * - postcondition: Redirect generated
+   *
+   * @since  COmanage Registry v4.1.0
+   */
+
+  public function performRedirect() {
+    $target = array();
+    $target['plugin'] = 'ligo_mou_transfer_enroller';
+    $target['controller'] = "ligo_mou_transfer_enrollers";
+    $target['action'] = 'edit';
+    $target[] = $this->request->params["pass"][0];
+
+    $this->redirect($target);
+  }
 }

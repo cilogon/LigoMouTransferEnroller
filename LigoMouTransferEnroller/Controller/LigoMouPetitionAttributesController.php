@@ -43,26 +43,6 @@ class LigoMouPetitionAttributesController extends StandardController {
   );
 
   /**
-   * Determine the CO ID based on some attribute of the request.
-   * This method is intended to be overridden by model-specific controllers.
-   *
-   * @since  COmanage Registry v4.1.0
-   * @return Integer CO ID, or null if not implemented or not applicable.
-   * @throws InvalidArgumentException
-   */
-
-//  protected function calculateImpliedCoId($data = null) {
-//    $args = array();
-//    $args['conditions']['CoPetition.id'] = $this->request->params["pass"][0];
-//    $args['contain'] = false;
-//    $co_petition =  $this->CoPetition->find('first', $args);
-//
-//    if(isset($co_petition["CoPetition"]["co_id"])) {
-//      return $co_petition["CoPetition"]["co_id"];
-//    }
-//  }
-
-  /**
    * Edit Action
    *
    * @since  COmanage Registry v4.1.0
@@ -70,6 +50,43 @@ class LigoMouPetitionAttributesController extends StandardController {
    */
 
   public function edit($id) {
+    // POST
+    if($this->request->is('post')
+       && !empty($this->request->data["LigoMouTransferEnroller"])) {
+      $dbc = $this->CoPetition->getDataSource();
+      $dbc->begin();
+      foreach ($this->request->data["LigoMouTransferEnroller"] as $mydata) {
+        if(!is_array($mydata)) {
+          continue;
+        }
+        foreach ($mydata as $mdl => $data) {
+          try {
+            $mdlObj = ClassRegistry::init($mdl);
+            $mdlObj->clear();
+            $mdlObj->id = (int)$data['id'];
+            unset($data['id']);
+            foreach ($data as $name => $value) {
+              if(!$mdlObj->saveField($name, $value)) {
+                $dbc->rollback();
+                throw new RuntimeException(_txt('er.db.save-a', array($mdl)));
+              }
+            }
+            // XXX History Record
+          } catch(Exception $e) {
+            $dbc->rollback();
+            throw new RuntimeException($e->getMessage());
+          }
+        }
+      }
+      $dbc->commit();
+      $this->Flash->set(_txt('rs.saved'), array('key' => 'success'));
+      $this->redirect(array('plugin' => null,
+                            'controller' => 'co_petitions',
+                            'action'     => 'view',
+                            $this->request->data["LigoMouTransferEnroller"]["co_petition_id"]));
+    }
+
+    // GET
     $args = array();
     $args['conditions']['LigoMouTransferEnroller.co_enrollment_flow_wedge_id'] = $this->request->params["named"]["wedgeid"];
 
@@ -87,11 +104,28 @@ class LigoMouPetitionAttributesController extends StandardController {
     $args['conditions']['CoPetition.id'] = $id;
     $args['contain'] = array(
       'CoPetitionAttribute' => array('CoEnrollmentAttribute'),
-      'EnrolleeCoPerson' => array('PrimaryName'),
+      'EnrolleeCoPerson' => array('PrimaryName','CoPersonRole'),
       'PetitionerCoPerson'
     );
     $co_petition =  $this->CoPetition->find('first', $args);
 
+    $availableAttributes = $this->CoPetition->CoPetitionAttribute->CoEnrollmentAttribute->availableAttributes($co_petition["CoPetition"]["co_id"]);
+    $available_attributes_restructured = array();
+    foreach ($availableAttributes as $model_fn => $attribute) {
+      foreach ($attribute as $attr_code => $attr_fn) {
+        list($mdl_abbr, $field) = explode(':', $attr_code);
+        $available_attributes_restructured[$attr_code] = array(
+          'model' => Inflector::classify(strtolower($model_fn)),
+          'field' => $field
+          );
+      }
+    }
+
+    $co_person_role = Hash::extract($co_petition, 'EnrolleeCoPerson.CoPersonRole.{n}[id=' . $co_petition['CoPetition']['enrollee_co_person_role_id'] . ']');
+
+    $this->set('vv_co_person_role', $co_person_role);
+    $this->set('vv_available_attributes', $availableAttributes);
+    $this->set('vv_available_attributes_restructured', $available_attributes_restructured);
     $this->set('title_for_layout', _txt('ct.ligo_mou_petition_attributes.pl'));
     $this->set('vv_co_petition', $co_petition);
     $this->set('vv_ligo_mou_transfer_petitions', $ligo_mou_transfer_petitions);

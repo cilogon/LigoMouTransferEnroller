@@ -149,19 +149,19 @@ class TransferPreserveAppointmentsController extends StandardController
     // Determine what operations this user can perform
 
     // Add
-    $p['add'] = ($roles['cmadmin'] || $roles['coadmin'] || $roles['coθadmin']);
+    $p['add'] = ($roles['cmadmin'] || $roles['coadmin']);
 
     // Delete
-    $p['delete'] = ($roles['cmadmin'] || $roles['coadmin'] || $roles['coθadmin']);
+    $p['delete'] = ($roles['cmadmin'] || $roles['coadmin']);
 
     // Edit
-    $p['edit'] = ($roles['cmadmin'] || $roles['coadmin'] || $roles['coθadmin']);
+    $p['edit'] = ($roles['cmadmin'] || $roles['coadmin']);
 
     // View
-    $p['index'] = ($roles['cmadmin'] || $roles['coadmin'] || $roles['coθadmin']);
+    $p['index'] = ($roles['cmadmin'] || $roles['coadmin']);
 
     // View
-    $p['view'] = ($roles['cmadmin'] || $roles['coadmin'] || $roles['coθadmin']);
+    $p['view'] = ($roles['cmadmin'] || $roles['coadmin']);
 
     $this->set('permissions', $p);
     return($p[$this->action]);
