@@ -66,7 +66,8 @@ class LigoMouPetitionAttributesController extends StandardController {
       try {
         $this->LigoMouPetitionAttribute->updatePetitionAttributes($this->request->data["LigoMouTransferEnroller"],
                                                                   $this->Session->read('Auth.User.co_person_id'),
-                                                                  $co_petition['CoPetition']['enrollee_co_person_id']);
+                                                                  $co_petition['CoPetition']['enrollee_co_person_id'],
+                                                                  $co_petition['CoPetitionAttribute']);
         $this->Flash->set(_txt('rs.saved'), array('key' => 'success'));
       } catch (Exception $e) {
         $this->Flash->set($e->getMessage(), array('key' => 'error'));
