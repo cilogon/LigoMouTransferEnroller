@@ -76,6 +76,13 @@ print $this->Form->hidden("LigoMouTransferEnroller.co_petition_id", array('defau
   <?php print "Edit now"; ?>
 </div>
 
+<script type="text/javascript">
+  <!-- /* JS specific to these fields */ -->
+  function updateAttribute(e, attr_field_id) {
+    $(`#${attr_field_id}`).attr('value', e.value);
+  }
+</script>
+
 <ul id="<?php print $this->action; ?>_ligo_mou_petition_attributes" class="fields form-list">
   <?php foreach($vv_ligo_mou_petition_attributes as $idx => $attribute): ?>
   <?php
@@ -122,11 +129,15 @@ print $this->Form->hidden("LigoMouTransferEnroller.co_petition_id", array('defau
             }
           }
 
-          print $this->Form->hidden("LigoMouTransferEnroller.{$idx}.CoPetitionAttribute.value",
-                                    array('default' => $args['value'])) . PHP_EOL;
+          $attribute_cake_field = "LigoMouTransferEnroller.{$idx}.CoPetitionAttribute.value";
+          $attribute_cake_id = Inflector::classify(str_replace('.', ' ', $attribute_cake_field));
+          // XXX We need to update this through javascript everytime we change the value below
+          print $this->Form->text($attribute_cake_field, array('default' => $args['value'], 'class' => 'd-none')) . PHP_EOL;
           if($model == 'CoPersonRole') {
             print $this->Form->hidden("LigoMouTransferEnroller.{$idx}.{$model}.id", array('default' => $vv_co_person_role[0]["id"])) . PHP_EOL;
           }
+
+          $args['onchange'] = "updateAttribute(this, '{$attribute_cake_id}')";
           print $this->Form->text("LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}", $args);
         } else {
           if(!empty($attribute['value'])) {
