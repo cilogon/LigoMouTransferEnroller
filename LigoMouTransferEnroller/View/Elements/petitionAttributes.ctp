@@ -41,6 +41,29 @@ $cfg = $this->PetitionAttribute->getCfg($vv_wedge['id']);
 $this->Html->css('LigoMouTransferEnroller.mou_transfer', array('inline' => false));
 ?>
 
+<script type="text/javascript">
+  const status = '<?php print $vv_petition['status'];?>';
+  const allow_edit = <?php print $cfg["LigoMouTransferEnroller"]["allow_edit"];?>;
+  const url_base = '<?php print $this->webroot;?>';
+  const petition_id = <?php print $vv_petition['id']; ?>;
+  const wedge_id = '<?php print $vv_wedge['id'];?>';
+  const link_text = '<?php print _txt('op.edit') . _txt('pl.ligo_mou_transfer_enrollers.action-desc'); ?>';
+
+  const edit_attributes_link = status == 'PA' && allow_edit &&
+    `<div class="coAddEditButtons">
+       <a href="${url_base}ligo_mou_transfer_enroller/ligo_mou_petition_attributes/edit/${petition_id}/wedgeid:${wedge_id}"
+          class="editbutton"
+          role="button">${link_text}
+       </a>
+     </div>`;
+
+  $(function() {
+    if(status == 'PA' && allow_edit) {
+      $("#topLinks").append(edit_attributes_link);
+    }
+  });
+</script>
+
 <li id="tabs-ligo-attributes" class="fieldGroup">
   <?php if($cfg["LigoMouTransferEnroller"]["allow_edit"] === true
            && $vv_petition['status'] == PetitionStatusEnum::PendingApproval): ?>
