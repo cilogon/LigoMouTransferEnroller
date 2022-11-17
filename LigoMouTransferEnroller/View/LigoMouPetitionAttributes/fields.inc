@@ -84,20 +84,40 @@ print $this->Form->hidden("LigoMouTransferEnroller.co_petition_id", array('defau
 </script>
 
 <ul id="<?php print $this->action; ?>_ligo_mou_petition_attributes" class="fields form-list">
-  <?php foreach($vv_ligo_mou_petition_attributes as $idx => $attribute): ?>
+  <?php foreach($vv_coe_attributes as $idx => $attribute): ?>
   <?php
     if($this->action != 'edit') {
       continue;
     }
 
-    // For now we only care about dates
-    if(strpos($attribute["CoEnrollmentAttribute"]["attribute"], 'r:valid') === false) {
+    // Currently we only support
+    // PersonRoles affiliations and dates
+    if(strpos($attribute["attribute"], 'r:valid') === false
+       && $attribute["attribute"] != 'r:affiliation') {
       continue;
     }
 
-    $attribute_field_name = $vv_available_attributes_restructured[$attribute["CoEnrollmentAttribute"]["attribute"]]['field'];
+    // Extract the petition attribute from the list since the index of $vv_ligo_mou_petition_attributes
+    // and the one from $vv_coe_attributes do not match
+    $petition_attribute = array();
+    foreach ($vv_ligo_mou_petition_attributes as $pt) {
+      if($pt['CoEnrollmentAttribute']['attribute'] == $attribute["attribute"]) {
+        $petition_attribute = $pt;
+        break;
+      }
+    }
 
-    print $this->Form->hidden("LigoMouTransferEnroller.{$idx}.CoPetitionAttribute.id", array('default' => $vv_co_petition["CoPetitionAttribute"][$idx]["id"])) . PHP_EOL;
+    // The type of validation rule can influence what we output.
+    $ruleType = 'default';
+
+    if(isset($attribute['validate']['content']['rule'][0])) {
+      $ruleType = $attribute['validate']['content']['rule'][0];
+    }
+
+    $attribute_field_name = $attribute['field'];
+
+    // The petition Attribute record id
+    print $this->Form->hidden("LigoMouTransferEnroller.{$idx}.CoPetitionAttribute.id", array('default' => $petition_attribute["id"])) . PHP_EOL;
 
 
     ?>
@@ -105,43 +125,97 @@ print $this->Form->hidden("LigoMouTransferEnroller.co_petition_id", array('defau
       <div class="field-name">
         <?php
         if($e) {
-          $model = $vv_available_attributes_restructured[$attribute["CoEnrollmentAttribute"]["attribute"]]['model'];
-          print $this->Form->label("LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}", _txt("fd.{$attribute_field_name}.tz", array($vv_tz)));
+          $model = $attribute['model'];
+          switch($ruleType) {
+             case 'inList':
+               print $this->Form->label("LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}",
+                                        _txt("fd.{$attribute_field_name}"));
+               break;
+             case 'date':
+             case 'validateTimestamp':
+               print $this->Form->label(
+                 "LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}",
+                 _txt("fd.{$attribute_field_name}.tz", array($vv_tz))
+               );
+               break;
+           }
         } else {
           print _txt("fd.{$attribute_field_name}");
         }
-        ?><br />
-        <span class="field-descr"><?php print _txt("fd.{$attribute_field_name}.desc"); ?></span>
+        ?>
+        <?php if(_txt("fd.{$attribute_field_name}.desc") != "fd.{$attribute_field_name}.desc"): ?>
+          <br />
+          <span class="field-descr"><?php print _txt("fd.{$attribute_field_name}.desc"); ?></span>
+        <?php endif; ?>
       </div>
       <div class="field-info">
         <?php
         if($e) {
-          $args = array(
-            'class' => 'datepicker-f'
-          );
-
-          if(!empty($attribute['value'])) {
-            if(!empty($vv_tz)) {
-              // We need to adjust the UTC value to the user's local time
-              $args['value'] = $this->Time->format($attribute['value'], "%F %T", false, $vv_tz);
-            } else {
-              $args['value'] = $attribute['value'];
-            }
-          }
-
           $attribute_cake_field = "LigoMouTransferEnroller.{$idx}.CoPetitionAttribute.value";
           $attribute_cake_id = Inflector::classify(str_replace('.', ' ', $attribute_cake_field));
+
           // XXX We need to update this through javascript everytime we change the value below
-          print $this->Form->text($attribute_cake_field, array('default' => $args['value'], 'class' => 'd-none')) . PHP_EOL;
-          if($model == 'CoPersonRole') {
-            print $this->Form->hidden("LigoMouTransferEnroller.{$idx}.{$model}.id", array('default' => $vv_co_person_role[0]["id"])) . PHP_EOL;
+          print $this->Form->text(
+              $attribute_cake_field,
+              array('default' => $petition_attribute['value'], 'class' => 'd-none')
+            ) . PHP_EOL;
+          if ($model == 'EnrolleeCoPersonRole') {
+            print $this->Form->hidden(
+                "LigoMouTransferEnroller.{$idx}.{$model}.id",
+                array('default' => $vv_co_person_role[0]["id"])
+              ) . PHP_EOL;
           }
 
-          $args['onchange'] = "updateAttribute(this, '{$attribute_cake_id}')";
-          print $this->Form->text("LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}", $args);
+          switch($ruleType) {
+            case 'inList':
+              $args['empty'] = !$attribute['required'];
+              $args['class'] = 'co-selectfield form-control';
+              $args['aria-label'] = $model;
+              $args['value'] = $petition_attribute['value'];
+              $args['onchange'] = "updateAttribute(this, '{$attribute_cake_id}')";
+
+              // Render the form field, label, and error (if any)
+              print $this->Form->select("LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}", $attribute['select'], $args);
+              // We use only the aria-label attribute on select boxes. A label would look like this:
+              // print $this->Form->label("LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}", $m, array('class' => ''));
+              if($this->Form->isFieldError("LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}")) {
+                print $this->Form->error("LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}", array('class' => 'is-invalid'));
+              }
+              break;
+            case 'date':
+            case 'validateTimestamp':
+              $args = array(
+                'class' => 'datepicker-f'
+              );
+
+              if (!empty($petition_attribute['value'])) {
+                if (!empty($vv_tz)) {
+                  // We need to adjust the UTC value to the user's local time
+                  $args['value'] = $this->Time->format($petition_attribute['value'], "%F %T", false, $vv_tz);
+                } else {
+                  $args['value'] = $petition_attribute['value'];
+                }
+              }
+
+              $args['onchange'] = "updateAttribute(this, '{$attribute_cake_id}')";
+              print $this->Form->text(
+                "LigoMouTransferEnroller.{$idx}.{$model}.{$attribute_field_name}",
+                $args
+              );
+          }
         } else {
-          if(!empty($attribute['value'])) {
-            print $this->Time->format($attribute['value'], "%c $vv_tz", false, $vv_tz);
+          switch($ruleType) {
+            case 'inList':
+              if (!empty($petition_attribute['value'])) {
+                print $petition_attribute['value'];
+              }
+              break;
+            case 'date':
+            case 'validateTimestamp':
+              if (!empty($petition_attribute['value'])) {
+                print $this->Time->format($petition_attribute['value'], "%c $vv_tz", false, $vv_tz);
+              }
+              break;
           }
         }
         ?>

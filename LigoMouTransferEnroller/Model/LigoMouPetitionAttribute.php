@@ -51,6 +51,7 @@ class LigoMouPetitionAttribute extends AppModel {
 
   public function updatePetitionAttributes($request_data, $actor, $enrolle_id) {
     $HistoryRecord = ClassRegistry::init('HistoryRecord');
+    $CoPetition = ClassRegistry::init('CoPetition');
     $history_belongs_to = array_keys($HistoryRecord->belongsTo);
 
     $dbc = $this->getDataSource();
@@ -59,29 +60,30 @@ class LigoMouPetitionAttribute extends AppModel {
       if(!is_array($mydata)) {
         continue;
       }
+      // My models should always associate directly to CoPetition
       foreach ($mydata as $mdl => $data) {
         try {
-          $mdlObj = ClassRegistry::init($mdl);
-          $mdlObj->clear();
-          $mdlObj->id = (int)$data['id'];
+          $CoPetition->$mdl->clear();
+          $CoPetition->$mdl->id = (int)$data['id'];
           unset($data['id']);
           foreach ($data as $name => $value) {
-            if(!$mdlObj->saveField($name, $value, array('validate' => true))) {
+            if(!$CoPetition->$mdl->saveField($name, $value, array('validate' => true))) {
               $dbc->rollback();
-              if(!empty($mdlObj->invalidFields())) {
+              if(!empty($CoPetition->$mdl->invalidFields())) {
                 throw new RuntimeException(_txt('er.transfer_preserve_appointment.validation', array($mdl)));
               }
               throw new RuntimeException(_txt('er.db.save-a', array($mdl)));
             }
             // Record history
-            if(in_array($mdl, $history_belongs_to)) {
-              $action = constant('ActionEnum::' . $mdl . 'EditedPetition');
-              $mdlObj->HistoryRecord->record($enrolle_id,
-                                             $mdlObj->id, // XXX We currently handle only CoPersonRole
-                                             null,
-                                             $actor,
-                                             $action,
-                                             _txt('pl.ligo_mou_transfer_enrollers.admin-edit', array($name)));
+            if(in_array($CoPetition->$mdl->name, $history_belongs_to)) {
+              $action = constant('ActionEnum::' . $CoPetition->$mdl->name . 'EditedPetition');
+              $CoPetition->$mdl->HistoryRecord->record($enrolle_id,
+                                                             $CoPetition->$mdl->id, // XXX We currently handle only CoPersonRole
+                                                             null,
+                                                             $actor,
+                                                             $action,
+                                                             _txt('pl.ligo_mou_transfer_enrollers.admin-edit',
+                                                                  array($CoPetition->$mdl->name . ":" .$name)));
             }
           }
         } catch(Exception $e) {

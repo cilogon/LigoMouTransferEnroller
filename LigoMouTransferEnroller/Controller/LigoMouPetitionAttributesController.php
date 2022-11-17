@@ -89,25 +89,12 @@ class LigoMouPetitionAttributesController extends StandardController {
       }
     }
 
-    $availableAttributes = $this->CoPetition->CoPetitionAttribute->CoEnrollmentAttribute->availableAttributes($co_petition["CoPetition"]["co_id"]);
-    $available_attributes_restructured = array();
-    foreach ($availableAttributes as $model_fn => $attribute) {
-      foreach ($attribute as $attr_code => $attr_fn) {
-        list($mdl_abbr, $field) = explode(':', $attr_code);
-        $available_attributes_restructured[$attr_code] = array(
-          'model' => Inflector::classify(strtolower($model_fn)),
-          'field' => $field
-          );
-      }
-    }
-
     $co_person_role = Hash::extract($co_petition, 'EnrolleeCoPerson.CoPersonRole.{n}[id=' . $co_petition['CoPetition']['enrollee_co_person_role_id'] . ']');
 
     $this->set('vv_co_person_role', $co_person_role);
-    $this->set('vv_available_attributes', $availableAttributes);
-    $this->set('vv_available_attributes_restructured', $available_attributes_restructured);
     $this->set('title_for_layout', _txt('ct.ligo_mou_petition_attributes.pl'));
     $this->set('vv_co_petition', $co_petition);
+    $this->set('vv_coe_attributes', $this->CoPetition->CoPetitionAttribute->CoEnrollmentAttribute->enrollmentFlowAttributes($co_petition["CoPetition"]["co_enrollment_flow_id"]));
     $this->set('vv_ligo_mou_transfer_petitions', $ligo_mou_transfer_petitions);
     $this->set('vv_ligo_mou_petition_attributes', $co_petition["CoPetitionAttribute"]);
     $this->set('vv_co_id', $co_petition["CoPetition"]["co_id"]);
