@@ -65,22 +65,22 @@ $this->Html->css('LigoMouTransferEnroller.mou_transfer', array('inline' => false
 </script>
 
 <li id="tabs-ligo-attributes" class="fieldGroup">
-  <?php if($cfg["LigoMouTransferEnroller"]["allow_edit"] === true
-           && $vv_petition['status'] == PetitionStatusEnum::PendingApproval): ?>
-  <div class="coAddEditButtons">
-  <?php print $this->Html->link(
-      _txt('op.edit') . _txt('pl.ligo_mou_transfer_enrollers.action-desc'),
-      array(
-        'plugin' => 'ligo_mou_transfer_enroller',
-        'controller' => "ligo_mou_petition_attributes",
-        'action' => 'edit',
-        $vv_petition['id'],
-        'wedgeid' => $vv_wedge['id']
-      ),
-      array('class' => 'editbutton')
-    ) . PHP_EOL; ?>
-  </div>
-  <?php endif; ?>
+<!--  --><?php //if($cfg["LigoMouTransferEnroller"]["allow_edit"] === true
+//           && $vv_petition['status'] == PetitionStatusEnum::PendingApproval): ?>
+<!--  <div class="coAddEditButtons">-->
+<!--  --><?php //print $this->Html->link(
+//      _txt('op.edit') . _txt('pl.ligo_mou_transfer_enrollers.action-desc'),
+//      array(
+//        'plugin' => 'ligo_mou_transfer_enroller',
+//        'controller' => "ligo_mou_petition_attributes",
+//        'action' => 'edit',
+//        $vv_petition['id'],
+//        'wedgeid' => $vv_wedge['id']
+//      ),
+//      array('class' => 'editbutton')
+//    ) . PHP_EOL; ?>
+<!--  </div>-->
+<!--  --><?php //endif; ?>
 
   <a href="#tabs-ligo-attributes" class="fieldGroupName">
     <em class="material-icons">indeterminate_check_box</em>

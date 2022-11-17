@@ -43,6 +43,7 @@ $cm_ligo_mou_transfer_enroller_texts['en_US'] = array(
   // Error texts
   'er.transfer_preserve_appointment.lmtid.specify' => 'Named parameter lmtid was not found',
   'er.transfer_preserve_appointment.id.specify'    => 'Id was not found',
+  'er.transfer_preserve_appointment.validation'    => '"%1$s" Validation failed',
 
   // Fields
   'fd.ligo_mou_transfer_enrollers.allow_edit'       => 'Allow Edit',

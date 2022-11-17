@@ -68,6 +68,9 @@ class LigoMouPetitionAttribute extends AppModel {
           foreach ($data as $name => $value) {
             if(!$mdlObj->saveField($name, $value, array('validate' => true))) {
               $dbc->rollback();
+              if(!empty($mdlObj->invalidFields())) {
+                throw new RuntimeException(_txt('er.transfer_preserve_appointment.validation', array($mdl)));
+              }
               throw new RuntimeException(_txt('er.db.save-a', array($mdl)));
             }
             // Record history
