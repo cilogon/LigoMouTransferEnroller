@@ -42,6 +42,54 @@ class LigoMouPetitionAttribute extends AppModel {
     ),
   );
 
+  /**
+   * Update Petition Attributes and Co Person Models
+   *
+   * @since  COmanage Registry v4.1.0
+   * @param  array   $request_data    POST Request data
+   */
+
+  public function updatePetitionAttributes($request_data, $actor, $enrolle_id) {
+    $HistoryRecord = ClassRegistry::init('HistoryRecord');
+    $history_belongs_to = array_keys($HistoryRecord->belongsTo);
+
+    $dbc = $this->getDataSource();
+    $dbc->begin();
+    foreach ($request_data as $mydata) {
+      if(!is_array($mydata)) {
+        continue;
+      }
+      foreach ($mydata as $mdl => $data) {
+        try {
+          $mdlObj = ClassRegistry::init($mdl);
+          $mdlObj->clear();
+          $mdlObj->id = (int)$data['id'];
+          unset($data['id']);
+          foreach ($data as $name => $value) {
+            if(!$mdlObj->saveField($name, $value, array('validate' => true))) {
+              $dbc->rollback();
+              throw new RuntimeException(_txt('er.db.save-a', array($mdl)));
+            }
+            // Record history
+            if(in_array($mdl, $history_belongs_to)) {
+              $action = constant('ActionEnum::' . $mdl . 'EditedPetition');
+              $mdlObj->HistoryRecord->record($enrolle_id,
+                                             $mdlObj->id, // XXX We currently handle only CoPersonRole
+                                             null,
+                                             $actor,
+                                             $action,
+                                             _txt('pl.ligo_mou_transfer_enrollers.admin-edit', array($name)));
+            }
+          }
+        } catch(Exception $e) {
+          $dbc->rollback();
+          throw new RuntimeException($e->getMessage());
+        }
+      }
+    }
+    $dbc->commit();
+  }
+
   // Validation rules for table elements
   // Validation rules must be named 'content' for petition dynamic rule adjustment
   public $validate = array(

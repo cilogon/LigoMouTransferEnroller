@@ -50,40 +50,24 @@ class LigoMouPetitionAttributesController extends StandardController {
    */
 
   public function edit($id) {
+
+    $args = array();
+    $args['conditions']['CoPetition.id'] = $id;
+    $args['contain'] = array(
+      'CoPetitionAttribute' => array('CoEnrollmentAttribute'),
+      'EnrolleeCoPerson' => array('PrimaryName','CoPersonRole'),
+      'PetitionerCoPerson'
+    );
+    $co_petition =  $this->CoPetition->find('first', $args);
+
     // POST
     if($this->request->is('post')
        && !empty($this->request->data["LigoMouTransferEnroller"])) {
-      $dbc = $this->CoPetition->getDataSource();
-      $dbc->begin();
-      foreach ($this->request->data["LigoMouTransferEnroller"] as $mydata) {
-        if(!is_array($mydata)) {
-          continue;
-        }
-        foreach ($mydata as $mdl => $data) {
-          try {
-            $mdlObj = ClassRegistry::init($mdl);
-            $mdlObj->clear();
-            $mdlObj->id = (int)$data['id'];
-            unset($data['id']);
-            foreach ($data as $name => $value) {
-              if(!$mdlObj->saveField($name, $value)) {
-                $dbc->rollback();
-                throw new RuntimeException(_txt('er.db.save-a', array($mdl)));
-              }
-            }
-            // XXX History Record
-          } catch(Exception $e) {
-            $dbc->rollback();
-            throw new RuntimeException($e->getMessage());
-          }
-        }
-      }
-      $dbc->commit();
+      $this->LigoMouPetitionAttribute->updatePetitionAttributes($this->request->data["LigoMouTransferEnroller"],
+                                                                $this->Session->read('Auth.User.co_person_id'),
+                                                                $co_petition['CoPetition']['enrollee_co_person_id']);
       $this->Flash->set(_txt('rs.saved'), array('key' => 'success'));
-      $this->redirect(array('plugin' => null,
-                            'controller' => 'co_petitions',
-                            'action'     => 'view',
-                            $this->request->data["LigoMouTransferEnroller"]["co_petition_id"]));
+      $this->performRedirect();
     }
 
     // GET
@@ -99,15 +83,6 @@ class LigoMouPetitionAttributesController extends StandardController {
         $ligo_mou_transfer_petitions[] = $lmtp;
       }
     }
-
-    $args = array();
-    $args['conditions']['CoPetition.id'] = $id;
-    $args['contain'] = array(
-      'CoPetitionAttribute' => array('CoEnrollmentAttribute'),
-      'EnrolleeCoPerson' => array('PrimaryName','CoPersonRole'),
-      'PetitionerCoPerson'
-    );
-    $co_petition =  $this->CoPetition->find('first', $args);
 
     $availableAttributes = $this->CoPetition->CoPetitionAttribute->CoEnrollmentAttribute->availableAttributes($co_petition["CoPetition"]["co_id"]);
     $available_attributes_restructured = array();
@@ -178,9 +153,10 @@ class LigoMouPetitionAttributesController extends StandardController {
 
   public function performRedirect() {
     $target = array();
+    $target['plugin'] = null;
     $target['controller'] = "co_petitions";
     $target['action'] = 'view';
-    $target[]  = 10;
+    $target[]  = $this->request->data["LigoMouTransferEnroller"]["co_petition_id"];
 
     $this->redirect($target);
   }

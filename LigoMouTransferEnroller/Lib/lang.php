@@ -57,6 +57,7 @@ $cm_ligo_mou_transfer_enroller_texts['en_US'] = array(
 
   // Actions
   'pl.ligo_mou_transfer_enrollers.role-update'      => 'Updated Co Person Role (%1$s) expiration date.',
+  'pl.ligo_mou_transfer_enrollers.admin-edit'       => 'COU administrator edited "%1$s" field',
 
   // Plugin texts
   'pl.transfer_preserve_appointment.cou-info'          => 'You requested access to the COU <b>"%1$s"</b>',
