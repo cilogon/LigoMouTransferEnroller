@@ -50,27 +50,56 @@ class LigoMouPetitionAttribute extends AppModel {
    * @param  array   $actor               The Person performing the save
    * @param  array   $enrollee_id         The Person being modified
    * @param  array   $petitionAttributes  The current petitionAttributes values
+   * @param  array   $personRoles         List of CO Person Roles
    * @throws RuntimeException
    */
 
-  public function updatePetitionAttributes($request_data, $actor, $enrollee_id, $petitionAttributes) {
+  public function updatePetitionAttributes($request_data, $actor, $enrollee_id, $petitionAttributes, $personRoles) {
     $HistoryRecord = ClassRegistry::init('HistoryRecord');
     $CoPetition = ClassRegistry::init('CoPetition');
     $history_belongs_to = array_keys($HistoryRecord->belongsTo);
 
-    $dbc = $this->getDataSource();
-    $dbc->begin();
-    foreach ($request_data as $mydata) {
+    // Parse the request data and extract
+    // - current petition attributes
+    // - pending for save data
+    // - current person role values
+    $pending_person_role = array();
+    $form_data = array();
+    $petition_data = array();
+
+
+    foreach ($request_data as $key => $mydata) {
       if(!is_array($mydata)) {
+        $petition_data[$key] = $mydata;
+        if($key == 'cou_id') {
+          // Extract the pending CO Person Role
+          // XXX Hard coding the key is good enough for now
+          $pending_person_role['EnrolleeCoPersonRole'] = Hash::extract($personRoles, '{n}[cou_id=' . (int)$mydata . ']')[0];
+        }
         continue;
       }
 
-      // My models should always associate directly to CoPetition
+      $form_data[] = $mydata;
+    }
+
+    $dbc = $this->getDataSource();
+    $dbc->begin();
+    // My models should always associate directly to CoPetition
+    foreach ($form_data as $mydata) {
+      $petition_attribute = '';
       foreach ($mydata as $mdl => $data) {
         // Check if the value has changed. If not continue without saving
-        $current_pt_val = Hash::extract($petitionAttributes, '{n}[id=' . (int)$data['id'] . ']');
-        if(isset($current_pt_val[0]['value'])
-           && $current_pt_val[0]['value'] == $data['value']) {
+        $tmp = Hash::extract($petitionAttributes, '{n}[id=' . (int)$data['id'] . ']');
+        $current_record[$mdl] = array_pop($tmp);
+
+        // XXX Petition Attributes will have id, value columns while the Person Record will have id, <field name>
+        if( (isset($current_record[$mdl]['value']) && $current_record[$mdl]['value'] == $data['value'])  // Petition Attributes
+            || (isset($pending_person_role[$mdl][$petition_attribute])
+                && $pending_person_role[$mdl][$petition_attribute] == $data[$petition_attribute])                    // CO Person Role
+        ) {
+          // Cache the field name in order to use it during the next iteration
+          $petition_attribute = $current_record[$mdl]['attribute'] ?? '';
+          unset($current_record);
           continue;
         }
 
@@ -82,8 +111,10 @@ class LigoMouPetitionAttribute extends AppModel {
             if(!$CoPetition->$mdl->saveField($name, $value, array('validate' => true))) {
               $dbc->rollback();
               if(!empty($CoPetition->$mdl->invalidFields())) {
+                $dbc->rollback();
                 throw new RuntimeException(_txt('er.transfer_preserve_appointment.validation', array($mdl)));
               }
+              $dbc->rollback();
               throw new RuntimeException(_txt('er.db.save-a', array($mdl)));
             }
             // Record history
