@@ -77,6 +77,11 @@ class LigoMouPetitionAttributesController extends StandardController {
       $this->performRedirect();
     }
 
+    if(empty($this->request->params["named"]["wedgeid"])) {
+      throw new InvalidArgumentException(txt('er.ligo_mou_petition_attributes.wedgeid.specify'),
+                                         HttpStatusCodesEnum::HTTP_BAD_REQUEST);
+    }
+
     // GET
     $args = array();
     $args['conditions']['LigoMouTransferEnroller.co_enrollment_flow_wedge_id'] = $this->request->params["named"]["wedgeid"];
