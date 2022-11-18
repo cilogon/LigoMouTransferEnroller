@@ -37,23 +37,34 @@ $cm_ligo_mou_transfer_enroller_texts['en_US'] = array(
   'ct.transfer_preserve_appointments.pl'           => 'LIGO MOU Transfer Joint Appointment Configurations',
   'ct.ligo_mou_transfer_enrollers.1'               => 'LIGO MOU Transfer Appointment Enroller',
   'ct.ligo_mou_transfer_enrollers.pl'              => 'LIGO MOU Transfer Appointment Enrollers',
+  'ct.ligo_mou_petition_attributes.1'              => 'LIGO MOU Petition Attribute',
+  'ct.ligo_mou_petition_attributes.pl'             => 'LIGO MOU Petition Attributes',
 
   // Error texts
   'er.transfer_preserve_appointment.lmtid.specify' => 'Named parameter lmtid was not found',
   'er.transfer_preserve_appointment.id.specify'    => 'Id was not found',
+  'er.transfer_preserve_appointment.validation'    => '"%1$s" Validation failed',
+  'er.ligo_mou_petition_attributes.wedgeid.specify'=> 'Named parameter wedgeid was not found',
+
 
   // Fields
+  'fd.ligo_mou_transfer_enrollers.allow_edit'       => 'Allow Edit',
+  'fd.ligo_mou_transfer_enrollers.allow_edit.desc'  => 'Allow Enrollment Attributes edit from CO/COU Administrator',
   'fd.transfer_preserve_appointment.expires_at'     => 'Expires at: <b>%1$s</b>',
   'fd.transfer_preserve_appointment.never'          => 'Never',
   'fd.transfer_preserve_appointment.info'           => 'Uncheck to unsubscribe.',
   'fd.transfer_preserve_appointment.mode'           => 'Transaction Mode:',
   'fd.transfer_preserve_appointment.mode-a'         => 'Mode',
+  'fd.transfer_preserve_appointment.expire'         => 'Expire',
+  'fd.transfer_preserve_appointment.maintain'       => 'Maintain',
 
   // Actions
   'pl.ligo_mou_transfer_enrollers.role-update'      => 'Updated Co Person Role (%1$s) expiration date.',
+  'pl.ligo_mou_transfer_enrollers.admin-edit'       => 'COU administrator edited "%1$s" field',
 
   // Plugin texts
   'pl.transfer_preserve_appointment.cou-info'          => 'You requested access to the COU <b>"%1$s"</b>',
+  'pl.ligo_mou_transfer_enrollers.action-desc'         => ' Petition Attributes',
   'pl.transfer_preserve_appointment.introduction'      => 'Introduction',
   'pl.transfer_preserve_appointment.introduction.desc' => 'A short introductory text describing the purpose or other information about the Joint Appointment Configuration',
 );

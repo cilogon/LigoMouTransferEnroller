@@ -110,6 +110,19 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
   }
 
   /**
+   * Plugin functionality following finalize step
+   *
+   * @param   Integer  $id        CO Petition ID
+   * @param   Array    $onFinish  URL, in Cake format
+   */
+
+  protected function execute_plugin_finalize($id, $onFinish) {
+    // todo: Soft Delete the LigoMouTransfer Petition ???
+    // Finished the updates. Return to the petition
+    $this->redirect($onFinish);
+  }
+
+  /**
    * Plugin functionality following petitionerAttributes step
    *
    * @param   Integer  $id        CO Petition ID

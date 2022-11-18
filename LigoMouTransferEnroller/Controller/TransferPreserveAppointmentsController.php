@@ -1,6 +1,6 @@
 <?php
 /**
- * COmanage Registry Identifier Enroller Identifiers Controller
+ * COmanage Registry Transfer PreserveA ppointments Controller
  *
  * Portions licensed to the University Corporation for Advanced Internet
  * Development, Inc. ("UCAID") under one or more contributor license agreements.
@@ -21,7 +21,7 @@
  *
  * @link          http://www.internet2.edu/comanage COmanage Project
  * @package       registry-plugin
- * @since         COmanage Registry v4.0.0
+ * @since         COmanage Registry v4.1.0
  * @license       Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
  */
 
@@ -141,26 +141,26 @@ class TransferPreserveAppointmentsController extends StandardController
    */
 
   function isAuthorized() {
-    $roles = $this->Role->calculateCMRoles();             // What was authenticated
+    $roles = $this->Role->calculateCMRoles();
 
     // Construct the permission set for this user, which will also be passed to the view.
     $p = array();
 
     // Determine what operations this user can perform
 
-    // Add a new Identifier Enroller Identifier?
+    // Add
     $p['add'] = ($roles['cmadmin'] || $roles['coadmin']);
 
-    // Delete an existing Identifier Enroller Identifier?
+    // Delete
     $p['delete'] = ($roles['cmadmin'] || $roles['coadmin']);
 
-    // Edit an existing Identifier Enroller Identifier?
+    // Edit
     $p['edit'] = ($roles['cmadmin'] || $roles['coadmin']);
 
-    // View all existing Identifier Enroller Identifiers?
+    // View
     $p['index'] = ($roles['cmadmin'] || $roles['coadmin']);
 
-    // View an existing Identifier Enroller Identifier?
+    // View
     $p['view'] = ($roles['cmadmin'] || $roles['coadmin']);
 
     $this->set('permissions', $p);
