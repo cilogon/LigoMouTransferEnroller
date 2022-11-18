@@ -64,6 +64,7 @@ class LigoMouPetitionAttributesController extends StandardController {
     if($this->request->is('post')
        && !empty($this->request->data["LigoMouTransferEnroller"])) {
       try {
+        // Update
         $this->LigoMouPetitionAttribute->updatePetitionAttributes($this->request->data["LigoMouTransferEnroller"],
                                                                   $this->Session->read('Auth.User.co_person_id'),
                                                                   $co_petition['CoPetition']['enrollee_co_person_id'],

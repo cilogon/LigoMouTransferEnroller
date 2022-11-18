@@ -65,7 +65,11 @@ $args[] = $vv_co_petition['CoPetition']['id'];
 $this->Html->addCrumb(generateCn($vv_co_petition["EnrolleeCoPerson"]["PrimaryName"]), $args);
 
 $this->Html->addCrumb(_txt('ct.ligo_mou_petition_attributes.pl'));
-$this->Html->addCrumb(_txt('op.edit'));
+if($e) {
+  $this->Html->addCrumb(_txt('op.edit'));
+} else {
+  $this->Html->addCrumb(_txt('op.view'));
+}
 
 print $this->Form->hidden("LigoMouTransferEnroller.co_petition_id", array('default' => $vv_co_petition['CoPetition']['id'])) . PHP_EOL;
 
@@ -86,17 +90,6 @@ print $this->Form->hidden("LigoMouTransferEnroller.co_petition_id", array('defau
 <ul id="<?php print $this->action; ?>_ligo_mou_petition_attributes" class="fields form-list">
   <?php foreach($vv_coe_attributes as $idx => $attribute): ?>
   <?php
-    if($this->action != 'edit') {
-      continue;
-    }
-
-    // Currently we only support
-    // PersonRoles affiliations and dates
-    if(strpos($attribute["attribute"], 'r:valid') === false
-       && $attribute["attribute"] != 'r:affiliation') {
-      continue;
-    }
-
     // Extract the petition attribute from the list since the index of $vv_ligo_mou_petition_attributes
     // and the one from $vv_coe_attributes do not match
     $petition_attribute = array();
@@ -105,6 +98,17 @@ print $this->Form->hidden("LigoMouTransferEnroller.co_petition_id", array('defau
         $petition_attribute = $pt;
         break;
       }
+    }
+
+    // Send the old values as part of the form
+    print $this->Form->hidden("LigoMouTransferEnroller.{$petition_attribute["attribute"]}",
+                              array('default' => $petition_attribute["value"])) . PHP_EOL;
+
+    // Currently we only support
+    // PersonRoles affiliations and dates
+    if(strpos($attribute["attribute"], 'r:valid') === false
+      && $attribute["attribute"] != 'r:affiliation') {
+      continue;
     }
 
     // The type of validation rule can influence what we output.
