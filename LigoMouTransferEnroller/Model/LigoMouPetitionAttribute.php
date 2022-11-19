@@ -40,6 +40,11 @@ class LigoMouPetitionAttribute extends AppModel {
       'type' => 'datetime',
       'null' => true,
     ),
+    'affiliation' => array(
+      'type' => 'string',
+      'null' => true,
+      'length' => 32
+    ),
   );
 
   /**
@@ -54,7 +59,11 @@ class LigoMouPetitionAttribute extends AppModel {
    * @throws RuntimeException
    */
 
-  public function updatePetitionAttributes($request_data, $actor, $enrollee_id, $petitionAttributes, $personRoles) {
+  public function updatePetitionAttributes($request_data,
+                                           $actor,
+                                           $enrollee_id,
+                                           $petitionAttributes,
+                                           $personRoles) {
     $HistoryRecord = ClassRegistry::init('HistoryRecord');
     $CoPetition = ClassRegistry::init('CoPetition');
     $history_belongs_to = array_keys($HistoryRecord->belongsTo);
@@ -117,6 +126,30 @@ class LigoMouPetitionAttribute extends AppModel {
               $dbc->rollback();
               throw new RuntimeException(_txt('er.db.save-a', array($mdl)));
             }
+            // XXX I need to update the valid_through column of the cm_ligo_mou_transfer_petitions table
+            //     when the date is changed and the mode is `Leave on Membership start`
+            if ($name == 'valid_through') {
+              $LigoMouTransferPetition = ClassRegistry::init('LigoMouTransferEnroller.LigoMouTransferPetition');
+
+              $args = array();
+              $args['conditions']['LigoMouTransferPetition.co_enrollment_flow_wedge_id'] = $request_data["co_enrollment_flow_wedge_id"];
+              $args['conditions']['LigoMouTransferPetition.co_petition_id'] = $request_data["co_petition_id"];
+              $args['conditions']['LigoMouTransferPetition.mode'] = LigoMouTransferEnrollerTransferPolicyEnum::LeaveOnStart;
+              $args['conditions'][] = 'LigoMouTransferPetition.maintain_membership IS NOT TRUE';
+              $args['contain'] = false;
+
+              $transfer_petitions =  $LigoMouTransferPetition->find('all', $args);
+
+              foreach($transfer_petitions as $pt) {
+                $LigoMouTransferPetition->clear();
+                $LigoMouTransferPetition->id = (int)$pt['LigoMouTransferPetition']['id'];
+                if(!$LigoMouTransferPetition->saveField($name, $value)) {
+                  $dbc->rollback();
+                  throw new RuntimeException(_txt('er.db.save-a', array('LigoMouTransferPetition')));
+                }
+              }
+            }
+
             // Record history
             if(in_array($CoPetition->$mdl->name, $history_belongs_to)) {
               $action = constant('ActionEnum::' . $CoPetition->$mdl->name . 'EditedPetition');
@@ -160,6 +193,22 @@ class LigoMouPetitionAttribute extends AppModel {
       'follows' => array(
         'rule' => array("validateTimestampRange", "valid_from", ">"),
       ),
+    ),
+    'affiliation' => array(
+      'content' => array(
+        'rule' => array('validateExtendedType',
+          array('attribute' => 'affiliation',
+                'default' => array(AffiliationEnum::Faculty,
+                                   AffiliationEnum::Student,
+                                   AffiliationEnum::Staff,
+                                   AffiliationEnum::Alum,
+                                   AffiliationEnum::Member,
+                                   AffiliationEnum::Affiliate,
+                                   AffiliationEnum::Employee,
+                                   AffiliationEnum::LibraryWalkIn))),
+        'required' => false,
+        'allowEmpty' => true
+      )
     ),
   );
 }
