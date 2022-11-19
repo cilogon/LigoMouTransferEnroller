@@ -72,6 +72,7 @@ if($e) {
 }
 
 print $this->Form->hidden("LigoMouTransferEnroller.co_petition_id", array('default' => $vv_co_petition['CoPetition']['id'])) . PHP_EOL;
+print $this->Form->hidden("LigoMouTransferEnroller.co_enrollment_flow_wedge_id", array('default' => $vv_co_enrollment_flow_wedge_id)) . PHP_EOL;
 
 ?>
 

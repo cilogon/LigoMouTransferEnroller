@@ -105,6 +105,7 @@ class LigoMouPetitionAttributesController extends StandardController {
     $this->set('vv_coe_attributes', $this->CoPetition->CoPetitionAttribute->CoEnrollmentAttribute->enrollmentFlowAttributes($co_petition["CoPetition"]["co_enrollment_flow_id"]));
     $this->set('vv_ligo_mou_transfer_petitions', $ligo_mou_transfer_petitions);
     $this->set('vv_ligo_mou_petition_attributes', $co_petition["CoPetitionAttribute"]);
+    $this->set('vv_co_enrollment_flow_wedge_id', $this->request->params["named"]["wedgeid"]);
     $this->set('vv_co_id', $co_petition["CoPetition"]["co_id"]);
   }
 
