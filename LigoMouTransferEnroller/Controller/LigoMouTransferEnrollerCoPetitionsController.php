@@ -164,20 +164,36 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
     }
 
     // GET Request
-    $co_person_roles = $this->LigoMouTransferEnroller->getActivePersonRoles(
+    $co_person_roles_active = $this->LigoMouTransferEnroller->getPersonRolesByStatus(
       $this->cur_co['Co']['id'],
-      $this->Session->read('Auth.User.username')
+      $this->Session->read('Auth.User.username'),
+      array(StatusEnum::Active, StatusEnum::GracePeriod)
+    );
+
+    $co_person_roles_pending = $this->LigoMouTransferEnroller->getPersonRolesByStatus(
+      $this->cur_co['Co']['id'],
+      $this->Session->read('Auth.User.username'),
+      array(StatusEnum::PendingApproval)
     );
 
     // The user has no Roles. Redirect on Finish
-    if (empty($co_person_roles)) {
+    if (empty($co_person_roles_active)
+        && empty($co_person_roles_pending)) {
       $this->redirect($onFinish);
     }
 
     // Check for duplicates
-    $active_cou_memberships = Hash::extract($co_person_roles, '{n}.Cou.id');
-    $active_cou_memberships_list = Hash::combine($co_person_roles, '{n}.Cou.id', '{n}.Cou.name');
-    if(in_array($requested_roles['CoPersonRole']["cou_id"], $active_cou_memberships)) {
+
+    // Active
+    $active_cou_memberships = Hash::extract($co_person_roles_active, '{n}.Cou.id');
+    $active_cou_memberships_list = Hash::combine($co_person_roles_active, '{n}.Cou.id', '{n}.Cou.name');
+
+    // Pending
+    $pending_cou_memberships = Hash::extract($co_person_roles_pending, '{n}.Cou.id');
+    $pending_cou_memberships_list = Hash::combine($co_person_roles_pending, '{n}.Cou.id', '{n}.Cou.name');
+
+    if(in_array($requested_roles['CoPersonRole']["cou_id"], $active_cou_memberships)
+       || in_array($requested_roles['CoPersonRole']["cou_id"], $pending_cou_memberships) ) {
       $dbc = $this->CoPetition->getDataSource();
       $dbc->begin();
       try {
@@ -190,8 +206,14 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
         throw new RuntimeException($e->getMessage());
       }
       $dbc->commit();
+      $cou_name = "";
+      if(in_array($requested_roles['CoPersonRole']["cou_id"], $active_cou_memberships)) {
+        $cou_name = $active_cou_memberships_list[ $requested_roles['CoPersonRole']["cou_id"] ];
+      } else {
+        $cou_name = $pending_cou_memberships_list[ $requested_roles['CoPersonRole']["cou_id"] ];
+      }
       $this->Flash->set(_txt('er.pt.dupe.cou-a',
-                             array($active_cou_memberships_list[ $requested_roles['CoPersonRole']["cou_id"] ])),
+                             array( $cou_name )),
                              array('key' => 'error'));
       $this->redirect(array('plugin' => null,
                             'controller' => 'co_people',
@@ -201,7 +223,7 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
 
     // Render Joint appointment view
     $this->set('vv_requested_cou', $requested_roles["Cou"]);
-    $this->set('vv_person_roles', $co_person_roles);
+    $this->set('vv_person_roles', $co_person_roles_active);
     // Return in case of no configuration
     if (empty($ligo_enroller["TransferPreserveAppointment"])) {
       return;
