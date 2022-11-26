@@ -63,21 +63,22 @@ class LigoMouTransferEnroller extends AppModel {
   );
 
   /**
-   * Return CO Person Active CO Person Roles
+   * Return CO Person Roles by status. Skip status if you want to fetch all roles
    *
    * @since  COmanage Registry v4.1.0
    * @param  Integer      $coId       CO  ID
    * @param  String       $identifier CO Person Identifier
+   * @param  Array        $status     List of statuses to filter by
    * @return array|null   list of COUs
    */
 
-  public function getActivePersonRoles($coId, $identifier) {
+  public function getPersonRolesByStatus($coId, $identifier, $status = array()) {
     $args                                        = array();
     $args['joins'][0]['table']                   = 'cm_identifiers';
     $args['joins'][0]['alias']                   = 'Identifier';
     $args['joins'][0]['type']                    = 'INNER';
     $args['joins'][0]['conditions'][0]           = 'CoPersonRole.co_person_id=Identifier.co_person_id';
-    $args['conditions']['CoPersonRole.status']   = StatusEnum::Active;
+    $args['conditions']['CoPersonRole.status']   = $status;
     $args['conditions']['Identifier.identifier'] = $identifier;
     $args['conditions']['Identifier.status']     = StatusEnum::Active;
     $args['conditions']['Cou.co_id']             = $coId;
