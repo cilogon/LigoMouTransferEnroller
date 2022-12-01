@@ -4,7 +4,7 @@ Transfers are complicated by a number of factors:
 - There are three main types of groups: 
   1. Simple MOU groups which are comprised of a single institution
   2. The LIGO Laboratory federated MOU group, which is comprised of LLO, LHO, CIT Laboratory and MIT Laboratory groups
-  3. Other federated MOU groups which are comprised of multiple institutions under sing MOU
+  3. Other federated MOU groups which are comprised of multiple institutions under a single MOU
 - Persons may transfer between institutions within the same federated group
 - The LIGO Lab federated group has three statuses for a person: Lab MOU, Lab Personnel, Both
 - There are two types of transfers processes: those resulting in a person belonging to a single group and those resulting in a joint appointment
@@ -69,4 +69,5 @@ The transfer into the group of the approver is finalized, and email is sent to t
   * the name of the transferee
   * the list of current groups to which the transferee belongs with their end dates
   * the list of pending groups to which the transferee has been approved with their start and end dates
- 
+ ## _**What happens if a transferee trys to transfer to an MOU in which that have an existing membership?**_
+ A person should not be acting in more than one role at a time. Therefore, if a transferee attempts to transfer into an MOU they already have a membership in, the petition should be marked as duplicate unless the existing membership(s) are status deleted, expired, or denied.
