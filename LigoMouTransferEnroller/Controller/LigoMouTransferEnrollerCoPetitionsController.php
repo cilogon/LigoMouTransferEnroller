@@ -44,7 +44,7 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
    */
 
   protected function execute_plugin_approve($id, $onFinish) {
-    $args                                                                      = array();
+    $args = array();
     $args['conditions']['LigoMouTransferEnroller.co_enrollment_flow_wedge_id'] = $this->viewVars['vv_efwid'];
 
     $ligo_enroller = $this->LigoMouTransferEnroller->find('first', $args);
@@ -80,13 +80,29 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
       if($handle_petition['maintain_membership']) {
         continue;
       }
+      // Get the latest valid from date. Even though i updated this on Petition Attributes step
+      // the admin might have edited the dates.
+      $valid_from = null;
+      if ($handle_petition['mode'] === LigoMouTransferEnrollerTransferPolicyEnum::LeaveOnStart) {
+        $args = array();
+        $args["conditions"]["CoPersonRole.id"] = $petition_record["CoPetition"]["enrollee_co_person_role_id"];
+        $args["contain"] = false;
+        $role = $this->CoPetition->EnrolleeCoPerson->CoPersonRole->find("first", $args);
+        $valid_from = $role["CoPersonRole"]["valid_from"];
+      }
 
+      $this->CoPetition->EnrolleeCoPerson->CoPersonRole->clear();
       $this->CoPetition->EnrolleeCoPerson->CoPersonRole->id = $handle_petition['co_person_role_id'];
       if(!$this->CoPetition->EnrolleeCoPerson
                            ->CoPersonRole
-                           ->saveField('valid_through', $handle_petition['valid_through'])) {
+                           ->saveField('valid_through', $valid_from ?? $handle_petition['valid_through'])) {
         throw new RuntimeException(_txt('er.db.save'));
       }
+
+      // Update plugin Role pick configuration
+      $this->LigoMouTransferEnroller->LigoMouTransferPetition->clear();
+      $this->LigoMouTransferEnroller->LigoMouTransferPetition->id = $handle_petition["id"];
+      $this->LigoMouTransferEnroller->LigoMouTransferPetition->saveField("valid_through", $valid_from ?? $handle_petition['valid_through']);
 
       $history_msg = _txt('pl.ligo_mou_transfer_enrollers.role-update', array($handle_petition['co_person_role_id']));
 
