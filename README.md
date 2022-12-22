@@ -14,7 +14,7 @@ Transfers are complicated by a number of factors:
 To understand how these different factors affect the transfer process, we consider the following questions:
 
 ## _**Who can initiate a transfer?**_
-In all cases the transferee initiates the transfer. 
+In all cases the transferee initiates the transfer. The transferee must have an active role (not expired, suspended, etc.) in some institution to transfer.
 
 ## _**What information is supplied to initiate the transfer?**_ 
 The information is split into three categories:
