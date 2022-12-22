@@ -183,18 +183,11 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
     $co_person_roles_active = $this->LigoMouTransferEnroller->getPersonRolesByStatus(
       $this->cur_co['Co']['id'],
       $this->Session->read('Auth.User.username'),
-      array(StatusEnum::Active, StatusEnum::GracePeriod)
-    );
-
-    $co_person_roles_pending = $this->LigoMouTransferEnroller->getPersonRolesByStatus(
-      $this->cur_co['Co']['id'],
-      $this->Session->read('Auth.User.username'),
-      array(StatusEnum::PendingApproval)
+      array(StatusEnum::Active, StatusEnum::GracePeriod, StatusEnum::PendingApproval)
     );
 
     // The user has no Roles. Redirect on Finish
-    if (empty($co_person_roles_active)
-        && empty($co_person_roles_pending)) {
+    if (empty($co_person_roles_active)) {
       $this->redirect($onFinish);
     }
 
@@ -204,12 +197,7 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
     $active_cou_memberships = Hash::extract($co_person_roles_active, '{n}.Cou.id');
     $active_cou_memberships_list = Hash::combine($co_person_roles_active, '{n}.Cou.id', '{n}.Cou.name');
 
-    // Pending
-    $pending_cou_memberships = Hash::extract($co_person_roles_pending, '{n}.Cou.id');
-    $pending_cou_memberships_list = Hash::combine($co_person_roles_pending, '{n}.Cou.id', '{n}.Cou.name');
-
-    if(in_array($requested_roles['CoPersonRole']["cou_id"], $active_cou_memberships)
-       || in_array($requested_roles['CoPersonRole']["cou_id"], $pending_cou_memberships) ) {
+    if(in_array($requested_roles['CoPersonRole']["cou_id"], $active_cou_memberships)) {
       $dbc = $this->CoPetition->getDataSource();
       $dbc->begin();
       try {
@@ -222,12 +210,8 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
         throw new RuntimeException($e->getMessage());
       }
       $dbc->commit();
-      $cou_name = "";
-      if(in_array($requested_roles['CoPersonRole']["cou_id"], $active_cou_memberships)) {
-        $cou_name = $active_cou_memberships_list[ $requested_roles['CoPersonRole']["cou_id"] ];
-      } else {
-        $cou_name = $pending_cou_memberships_list[ $requested_roles['CoPersonRole']["cou_id"] ];
-      }
+
+      $cou_name = $active_cou_memberships_list[ $requested_roles['CoPersonRole']["cou_id"] ];
       $this->Flash->set(_txt('er.pt.dupe.cou-a',
                              array( $cou_name )),
                              array('key' => 'error'));

@@ -78,7 +78,7 @@ print $this->Form->hidden("LigoMouTransferEnroller.co_enrollment_flow_wedge_id",
 
 <div class="co-info-topbox">
   <em class="material-icons">info</em>
-  <?php print "Edit now"; ?>
+  <?php print _txt('pl.ligo_mou_transfer_enrollers.info'); ?>
 </div>
 
 <script type="text/javascript">

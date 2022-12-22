@@ -65,6 +65,7 @@ $cm_ligo_mou_transfer_enroller_texts['en_US'] = array(
   // Plugin texts
   'pl.transfer_preserve_appointment.cou-info'          => 'You requested access to the COU <b>"%1$s"</b>',
   'pl.ligo_mou_transfer_enrollers.action-desc'         => ' Petition Attributes',
+  'pl.ligo_mou_transfer_enrollers.info'                => 'Edit Petition Attributes List',
   'pl.transfer_preserve_appointment.introduction'      => 'Introduction',
   'pl.transfer_preserve_appointment.introduction.desc' => 'A short introductory text describing the purpose or other information about the Joint Appointment Configuration',
 );
