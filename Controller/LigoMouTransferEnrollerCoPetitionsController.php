@@ -154,9 +154,7 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
     $this->set('vv_ligo_enroller', $ligo_enroller);
     $this->set('vv_petition_id', $id);
 
-    $requested_roles = $this->LigoMouTransferEnroller->getCoPersonRoleFromPetition($this->cur_co['Co']['id'],
-                                                                                   $id,
-                                                                                   $this->Session->read('Auth.User.username'));
+    $requested_roles = $this->LigoMouTransferEnroller->getCoPersonRoleFromPetition($this->cur_co['Co']['id'], $id);
     if (empty($requested_roles)) {
       throw new RuntimeException("Bad result");
     }
@@ -182,7 +180,7 @@ class LigoMouTransferEnrollerCoPetitionsController extends CoPetitionsController
     // GET Request
     $co_person_roles_active = $this->LigoMouTransferEnroller->getPersonRolesByStatus(
       $this->cur_co['Co']['id'],
-      $this->Session->read('Auth.User.username'),
+      $this->Session->read('Auth.User.co_person_id'),
       array(StatusEnum::Active, StatusEnum::GracePeriod, StatusEnum::PendingApproval)
     );
 
