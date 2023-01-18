@@ -113,10 +113,11 @@ class LigoMouPetitionAttribute extends AppModel {
         }
 
         try {
-          $CoPetition->$mdl->clear();
-          $CoPetition->$mdl->id = (int)$data['id'];
+          $modelId = (int)$data['id'];
           unset($data['id']);
           foreach ($data as $name => $value) {
+            $CoPetition->$mdl->clear();
+            $CoPetition->$mdl->id = $modelId;
             if(!$CoPetition->$mdl->saveField($name, $value, array('validate' => true))) {
               $dbc->rollback();
               if(!empty($CoPetition->$mdl->invalidFields())) {
